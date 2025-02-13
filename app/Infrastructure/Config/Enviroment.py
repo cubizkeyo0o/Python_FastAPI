@@ -1,8 +1,7 @@
 from functools import lru_cache
 import os
 
-from pydantic import BaseSettings
-
+from pydantic_settings import BaseSettings
 
 @lru_cache
 def get_env_filename():
@@ -10,7 +9,7 @@ def get_env_filename():
     return f".env.{runtime_env}" if runtime_env else ".env"
 
 
-class EnvironmentSettings(BaseSettings):
+class EnviromentSettings(BaseSettings):
     API_VERSION: str
     APP_NAME: str
     DATABASE_DIALECT: str
@@ -27,5 +26,5 @@ class EnvironmentSettings(BaseSettings):
 
 
 @lru_cache
-def get_environment_variables():
-    return EnvironmentSettings()
+def get_enviroment_variables():
+    return EnviromentSettings()

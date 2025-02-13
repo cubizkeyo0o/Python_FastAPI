@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 
-from app import api
-from config.tags import Tags
-from config.enviroment import get_environment_variables
+from Infrastructure.Config import Tags
+from Infrastructure.Config.Enviroment import get_environment_variables
+from Domain.Entities.Base import init
+from API.Routers.v1 import UserRouter
 
 env = get_environment_variables()
 
@@ -19,11 +20,13 @@ def root():
     return {"message": "Fast API in Python"}
 
 
-@app.get("/createuser")
+@app.post("/createuser")
 def get_all_user():
-    return api.get_all_user()
+    return UserRouter.get_all_user()
 
 
-@app.get("/updateuser/{userId}")
+@app.patch("/updateuser/{userId}")
 def get_user_by_id(userId: int):
-    return api.get_user_by_id(userId)
+    return UserRouter.get_user_by_id(userId)
+
+init()

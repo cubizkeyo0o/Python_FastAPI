@@ -3,12 +3,12 @@ from typing import List, Optional
 from fastapi import Depends
 from sqlalchemy.orm import Session, lazyload
 
-from config.database import (
+from Config.Database import (
     get_db_connection,
 )
-from domain.user import User
+from Domain.Entities import User
 
-class userrepository:
+class UserRepository:
     db: Session
 
     def __init__(
