@@ -1,28 +1,29 @@
 from typing import List, Optional
 
 from fastapi import Depends
-from Domain.Entities import User
 
-from Infrastructure.Repositories import userrepository
-from Dtos.UserDto import UserDto
+from app.Domain.Entities.User import User
+from app.Infrastructure.Repositories.UserRepository import UserRepository
+from app.Application.Dtos.UserDto import UserDto
 
 class UserService:
-    userRepository: userrepository
+    userRepository: UserRepository
 
     def __init__(
-        self, userRepository: userrepository = Depends()
+        self, userRepository: UserRepository = Depends()
         ) -> None:
-        self.userRepository = userrepository
+        self.userRepository = userRepository
 
     def create(self, user_body: UserDto) -> User:
         return self.userRepository.create(
-            User(name=user_body.name)
+            user=User(name=user_body.name, email=user_body.email)
         )
     
     def update(
         self, user_id: int, user_body: UserDto
     ) -> User:
         return self.userRepository.update(
-            user_body, User(name=user_body.name)
+            id=user_id,
+            user=User(name=user_body.name, email=user_body.email)
         )
    

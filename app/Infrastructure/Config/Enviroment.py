@@ -3,6 +3,7 @@ import os
 
 from pydantic_settings import BaseSettings
 
+os.environ["ENV"] = "test"
 @lru_cache
 def get_env_filename():
     runtime_env = os.getenv("ENV")
@@ -23,7 +24,6 @@ class EnviromentSettings(BaseSettings):
     class Config:
         env_file = get_env_filename()
         env_file_encoding = "utf-8"
-
 
 @lru_cache
 def get_enviroment_variables():

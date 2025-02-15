@@ -1,12 +1,12 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, status
-from Application.AppServices import UserAppService
-from Application.Dtos import UserDto
-from Models.UserModel import (
+from app.Application.AppServices.UserAppService import UserService
+from app.Application.Dtos import UserDto
+from app.API.Models.UserModel import (
     CreateUserModel,
     UpdateUserModel,
-    ResponseUserModel,
+    ResponseUserModel
 )
 
 userrouter = APIRouter(
@@ -19,11 +19,11 @@ userrouter = APIRouter(
     response_model=ResponseUserModel,
     status_code=status.HTTP_201_CREATED,
 )
-def create(
+async def create(
     user: CreateUserModel,
-    userService: UserAppService = Depends(),
+    userService: UserService = Depends(),
     ):
-    return userService.create(UserDto()).normalize()
+    return userService.create(UserDto(user.name, user.email))
 
 
 @userrouter.patch(
@@ -31,9 +31,11 @@ def create(
     response_model=ResponseUserModel,
     status_code=status.HTTP_201_CREATED,
 )
-def update(
+async def update(
     id: int,
     user: UpdateUserModel,
-    userService: UserAppService = Depends(),
+    userService: UserService = Depends(),
 ):
-    return userService.update(id, UserDto(UpdateUserModel.name, UpdateUserModel.email)).normalize()
+    return userService.update(id, UserDto(user.name, user.email))
+
+

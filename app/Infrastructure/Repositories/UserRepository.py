@@ -1,12 +1,13 @@
 from typing import List, Optional
+from asyncio import wait
 
 from fastapi import Depends
 from sqlalchemy.orm import Session, lazyload
 
-from Config.Database import (
+from app.Infrastructure.database.DatabaseInit import (
     get_db_connection,
 )
-from Domain.Entities import User
+from app.Infrastructure.database.mapping.User import User
 
 class UserRepository:
     db: Session
