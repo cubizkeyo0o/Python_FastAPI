@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from app.API.Routers.Index import Tags
 from app.Infrastructure.Config.Enviroment import get_enviroment_variables
-from app.Domain.Entities.Base import init
+from app.Infrastructure.database.mapping.Base import init
 from app.API.Routers.v1.UserRouter import userrouter
 
 env = get_enviroment_variables()

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, status
 from app.Application.AppServices.UserAppService import UserService
-from app.Application.Dtos import UserDto
+from app.Application.Dtos.UserDto import UserDto
 from app.API.Models.UserModel import (
     CreateUserModel,
     UpdateUserModel,

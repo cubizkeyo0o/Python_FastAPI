@@ -7,7 +7,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 #env = get_enviroment_variables()
 
 # Generate Database URL
-DATABASE_URL = f"{"mysql+mysqlconnector"}://{"root"}:{"longNam2403#"}@{"localhost"}:{"3306"}/{"TestDatabase"}"
+DATABASE_URL = f"{"mysql+mysqlconnector"}://{"root"}:{"longNam2403"}@{"localhost"}:{"3306"}/{"testdatabase"}"
 
 # Create Database Engine
 Engine = create_engine(
