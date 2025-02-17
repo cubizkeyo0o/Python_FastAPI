@@ -1,17 +1,17 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from config.enviroment import get_environment_variables
+#from app.Infrastructure.Config.Enviroment import get_enviroment_variables
 
 # Runtime Environment Configuration
-env = get_environment_variables()
+#env = get_enviroment_variables()
 
 # Generate Database URL
-DATABASE_URL = f"{env.DATABASE_DIALECT}://{env.DATABASE_USERNAME}:{env.DATABASE_PASSWORD}@{env.DATABASE_HOSTNAME}:{env.DATABASE_PORT}/{env.DATABASE_NAME}"
+DATABASE_URL = f"{"mysql+mysqlconnector"}://{"root"}:{"longNam2403"}@{"localhost"}:{"3306"}/{"testdatabase"}"
 
 # Create Database Engine
 Engine = create_engine(
-    DATABASE_URL, echo=env.DEBUG_MODE, future=True
+    DATABASE_URL, echo=True, future=True
 )
 
 SessionLocal = sessionmaker(
