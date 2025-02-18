@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from fastapi import APIRouter, Depends, status, HTTPException
 from app.Application.AppServices.UserAppService import UserService
 from app.Application.Models.UserModel import (

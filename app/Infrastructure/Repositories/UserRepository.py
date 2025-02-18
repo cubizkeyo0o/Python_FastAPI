@@ -2,10 +2,8 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.Infrastructure.database.DatabaseInit import (
-    get_db_connection,
-)
-from app.Domain.Entities.User import (
+from app.Infrastructure.database.DatabaseInit import get_db_connection
+from app.domain.entities.User import (
     User as DbUser,
     UserCreate, 
     UserUpdate
@@ -69,6 +67,15 @@ class UserRepository:
         
         await self.db.delete(existing_user)
         return {"message": "User deleted successfully"}
+    
+    async def verify_password(self, username: str, password: str):
+        async with get_db_connection() as db:
+            query = select(DbUser).filter_by(user_name=username, password_hash=password)
+            queryResult = await db.execute(query)
+            user_login = queryResult.scalars().first()
+            if not user_login:
+                return None
+            return user_login
 
 async def get_user_repository(db: AsyncSession = Depends(get_db_connection)) -> UserRepository:
         return UserRepository(db)
