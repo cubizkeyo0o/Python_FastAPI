@@ -1,24 +1,47 @@
-from pydantic import BaseModel, EmailStr
+from datetime import datetime
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+)
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
+from pydantic import BaseModel
 
+from app.Application.Models.UserModel import ResponseUserModel
 
-# Domain model for a User
-class User:
-    def __init__(self, id: int, name: str, email: str):
-        self.id = id  # User ID
-        self.name = name  # User name
-        self.email = email  # User email
+from app.Domain.Base import EntityMeta
 
-# Pydantic model for creating a new user request
-class CreateUserRequest(BaseModel):
-    name: str  # Name of the user
-    email: EmailStr  # Email of the user, validated as an email string
+class User(EntityMeta):
+    __tablename__ = "users"
 
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(255))
+    username: Mapped[str] = mapped_column(String(120))
+    email: Mapped[str] = mapped_column(String(120), unique=True, index=True)
+    created = Column(DateTime, default=datetime.now, nullable=True)
 
-# Pydantic model for the response after creating a new user
-class CreateUserResponse(BaseModel):
-    id: int  # User ID
-    name: str  # Name of the user
-    email: EmailStr  # Email of the user, validated as an email string
+    def __repr__(self) -> str:
+        """Define the model representation."""
+        return f'User({self.id}, "{self.name}")'
 
-    class Config:
-        from_attributes = True  # Enable population of the model from attributes
+    def to_model(self) -> ResponseUserModel:
+        return ResponseUserModel(name=self.name, email=self.email)
+    
+class UserCreate(BaseModel):
+    name: str
+    username : str
+    email: str
+
+class UserInDB(UserCreate):
+    id: int
+
+class UserUpdate(BaseModel):
+    email: str
+    name: str
+
+class UserResponse(BaseModel):
+    username: str
+    email: str
+    name: str
