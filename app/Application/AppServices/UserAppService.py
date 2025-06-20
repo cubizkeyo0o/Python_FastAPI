@@ -1,4 +1,6 @@
 from fastapi import Depends
+from typing import List
+from logging import Logger
 
 from app.Infrastructure.Repositories.UserRepository import UserRepository, get_user_repository
 from app.Application.Models.UserModel import(
@@ -6,7 +8,7 @@ from app.Application.Models.UserModel import(
     UpdateUserModel,
     ResponseUserModel
 )
-from app.Domain.Entities.User import (
+from app.domain.entities.User import (
     UserCreate,
     UserUpdate,
 )
@@ -16,6 +18,10 @@ class UserService:
 
     def __init__(self, userRepository: UserRepository = Depends(get_user_repository)):
         self.userRepository = userRepository
+
+    async def get_all_async(self) -> List[ResponseUserModel]:
+        users = await self.userRepository.get_all_async()
+        return [user.to_model() for user in users]
 
     async def create_async(self, user_body: CreateUserModel) -> ResponseUserModel:
         userCreate = await self.userRepository.create_async(

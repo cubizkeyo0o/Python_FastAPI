@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 
 from app.API.Routers.Index import Tags

@@ -1,31 +1,77 @@
 from contextlib import asynccontextmanager
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from app.Domain.Base import EntityMeta
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import (
+    create_async_engine, async_sessionmaker, AsyncEngine, async_scoped_session, AsyncSession
+)
+from asyncio import current_task
+from collections.abc import AsyncIterator
+
 
 #from app.Infrastructure.Config.Enviroment import get_enviroment_variables
 
 # Runtime Environment Configuration
 #env = get_enviroment_variables()
 
-# Generate Database URL
 DATABASE_URL = f"{"mysql+asyncmy"}://{"root"}:{"longNam2403"}@{"localhost"}:{"3306"}/{"testdatabase"}"
 
-# Create Database Engine
-Engine = create_async_engine(
-    DATABASE_URL, echo=True, future=True
+import contextlib
+from typing import Any, AsyncIterator
+
+from sqlalchemy.ext.asyncio import (
+    AsyncConnection,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
 )
+from sqlalchemy.orm import DeclarativeBase
 
-async def init_models():
-    async with Engine.begin() as conn:
-        # await conn.run_sync(EntityMeta.metadata.drop_all)  # Uncomment nếu muốn xóa các bảng cũ
-        await conn.run_sync(EntityMeta.metadata.create_all)
+class Base(DeclarativeBase):
+    # https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html#preventing-implicit-io-when-using-asyncsession
+    __mapper_args__ = {"eager_defaults": True}
 
-SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=Engine)
+# Heavily inspired by https://praciano.com.br/fastapi-and-async-sqlalchemy-20-with-pytest-done-right.html
+class DatabaseSessionManager:
+    def __init__(self, host: str, engine_kwargs: dict[str, Any] = {}):
+        self._engine = create_async_engine(host, **engine_kwargs)
+        self._sessionmaker = async_sessionmaker(autocommit=False, bind=self._engine, expire_on_commit=False)
 
-@asynccontextmanager
-async def get_db_connection():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        await db.close()
+    async def close(self):
+        if self._engine is None:
+            raise Exception("DatabaseSessionManager is not initialized")
+        await self._engine.dispose()
+
+        self._engine = None
+        self._sessionmaker = None
+
+    @contextlib.asynccontextmanager
+    async def connect(self) -> AsyncIterator[AsyncConnection]:
+        if self._engine is None:
+            raise Exception("DatabaseSessionManager is not initialized")
+
+        async with self._engine.begin() as connection:
+            try:
+                yield connection
+            except Exception:
+                await connection.rollback()
+                raise
+
+    @contextlib.asynccontextmanager
+    async def session(self) -> AsyncIterator[AsyncSession]:
+        if self._sessionmaker is None:
+            raise Exception("DatabaseSessionManager is not initialized")
+
+        session = self._sessionmaker()
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+
+sessionmanager = DatabaseSessionManager(DATABASE_URL, {"echo": True})
+
+async def get_db_session():
+    async with sessionmanager.session() as session:
+        yield session

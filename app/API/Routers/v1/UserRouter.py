@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, status, HTTPException
+from typing import List
 from app.Application.AppServices.UserAppService import UserService
 from app.Application.Models.UserModel import (
     CreateUserModel,
@@ -9,6 +10,22 @@ from app.Application.Models.UserModel import (
 userrouter = APIRouter(
     prefix="/v1/users", tags=["user"]
 )
+
+# GET all user
+@userrouter.get(
+    "/",
+    response_model=List[ResponseUserModel],
+    status_code=status.HTTP_200_OK,
+)
+async def get_users(user_service: UserService = Depends()):
+    try:
+        users = await user_service.get_all_async()
+        return users
+    except Exception as ex:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Don't get list user.",
+        ) from ex
 
 @userrouter.post(
     "/",

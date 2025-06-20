@@ -2,7 +2,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.Infrastructure.database.DatabaseInit import get_db_connection
+from app.Infrastructure.database.DatabaseInit import get_db_session
 from app.domain.entities.User import (
     User as DbUser,
     UserCreate, 
@@ -12,8 +12,17 @@ from app.domain.entities.User import (
 class UserRepository:
     db: AsyncSession
 
-    def __init__(self, db: AsyncSession = Depends(get_db_connection)) -> None:
+    def __init__(self, db: AsyncSession = Depends(get_db_session)) -> None:
         self.db = db
+
+    async def get_all_async(self):
+        query = select(DbUser)
+        queryExec = await self.db.execute(query)
+        users = queryExec.scalars().all()
+
+        if not users:
+            return None
+        return users
 
     async def get_by_email_async(self, email: str ):
         query = select(DbUser).filter_by(email=email)
@@ -32,7 +41,7 @@ class UserRepository:
         return user
 
     async def create_async(self, user: UserCreate):
-        async with get_db_connection() as db:
+        async with get_db_session() as db:
             user_create = DbUser(**user.model_dump())
             try:
                 db.add(user_create)
@@ -44,32 +53,34 @@ class UserRepository:
             return user_create
     
     async def update_async(self, id: int, user: UserUpdate):
-        query = select(DbUser).filter_by(id=id)
-        queryResult = await self.db.execute(query)
-        existing_user = queryResult.scalars().first()
+        async with get_db_session() as db:
+            query = select(DbUser).filter_by(id=id)
+            queryResult = await db.execute(query)
+            existing_user = queryResult.scalars().first()
 
-        if not existing_user:
-            return None
-        
-        for field, value in user.model_dump(exclude_unset=True).items:
-            setattr(existing_user, field, value)
-        
-        await self.db.commit()
-        return existing_user
+            if not existing_user:
+                return None
+            
+            for field, value in user.model_dump(exclude_unset=True).items:
+                setattr(existing_user, field, value)
+            
+            await self.db.commit()
+            return existing_user
     
     async def delete_async(self, id: int):
-        query = select(DbUser).filter_by(id=id)
-        queryResult = await self.db.execute(query)
-        existing_user = queryResult.scalars().first()
+        async with get_db_session() as db:
+            query = select(DbUser).filter_by(id=id)
+            queryResult = await self.db.execute(query)
+            existing_user = queryResult.scalars().first()
 
-        if not existing_user:
-            return None
-        
-        await self.db.delete(existing_user)
-        return {"message": "User deleted successfully"}
+            if not existing_user:
+                return None
+            
+            await self.db.delete(existing_user)
+            return {"message": "User deleted successfully"}
     
     async def verify_password(self, username: str, password: str):
-        async with get_db_connection() as db:
+        async with get_db_session() as db:
             query = select(DbUser).filter_by(user_name=username, password_hash=password)
             queryResult = await db.execute(query)
             user_login = queryResult.scalars().first()
@@ -77,5 +88,5 @@ class UserRepository:
                 return None
             return user_login
 
-async def get_user_repository(db: AsyncSession = Depends(get_db_connection)) -> UserRepository:
+async def get_user_repository(db: AsyncSession = Depends(get_db_session)) -> UserRepository:
         return UserRepository(db)
