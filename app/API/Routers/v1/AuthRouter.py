@@ -1,8 +1,8 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, HTTPException
 from app.Application.AppServices.UserAppService import UserService
 from app.Application.AppServices.AuthService import AuthService
 from app.Application.Models.AuthModel import (
-    LoginUserModel,
+    LoginUserModel
 )
 
 authrouter = APIRouter(

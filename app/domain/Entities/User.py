@@ -33,6 +33,7 @@ class UserCreate(BaseModel):
     name: str
     username : str
     email: str
+    password_hash: str
 
 class UserInDB(UserCreate):
     id: int

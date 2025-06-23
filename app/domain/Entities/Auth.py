@@ -45,6 +45,7 @@ class Auth(EntityMeta):
     user = relationship("User", back_populates="auth_sessions")
 
 class RegisterUserDto(BaseModel):
+    name: str
     username: str
     email: EmailStr
     password: str

@@ -3,9 +3,10 @@ from fastapi import Depends
 from app.Infrastructure.Repositories.AuthRepository import AuthRepository
 from app.domain.entities.Auth import AuthHelper, RegisterUserDto, LoginUserDto, TokenResponseDto
 from app.Infrastructure.Repositories.UserRepository import UserRepository, get_user_repository
+from app.domain.entities.User import UserCreate
 
 class AuthService:
-    userRepository = UserRepository
+    user_Repository = UserRepository
 
     def __init__(self, userRepository: UserRepository = Depends(get_user_repository)):
         self.user_repository = userRepository
@@ -18,12 +19,12 @@ class AuthService:
 
         hashed_password = AuthHelper.hash_password(user_data.password)
 
-        new_user = self.user_repository.create(user_data.username, user_data.email, hashed_password)
+        new_user = self.user_repository.create_async(UserCreate(name=user_data.name, email=user_data.email, username=user_data.username, password_hash=hashed_password))
 
         return {"message": "User registered successfully", "user_id": new_user.id}
 
     def login_user(self, user_name: str, password: str):
-        user = self.user_repository.get_by_username(user_name)
+        user = self.user_repository.get_by_name(user_name)
         if not user or not AuthHelper.verify_password(password, user.passwordhash):
             raise ValueError("Invalid credentials")
 
