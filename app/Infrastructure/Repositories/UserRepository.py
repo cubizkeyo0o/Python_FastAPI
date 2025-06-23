@@ -16,13 +16,16 @@ class UserRepository:
         self.db = db
 
     async def get_all_async(self):
-        query = select(DbUser)
-        queryExec = await self.db.execute(query)
-        users = queryExec.scalars().all()
+        try:
+            query = select(DbUser)
+            queryExec = await self.db.execute(query)
+            users = queryExec.scalars().all()
 
-        if not users:
-            return None
-        return users
+            if not users:
+                return None
+            return users
+        except Exception as ex: 
+            check = ex
 
     async def get_by_email_async(self, email: str ):
         query = select(DbUser).filter_by(email=email)
@@ -34,6 +37,14 @@ class UserRepository:
         
     async def get_by_id_async(self, id: int):
         query = select(DbUser).filter_by(id=id)
+        queryResult = await self.db.execute(query)
+        user = queryResult.scalars().first()
+        if not user:
+            return None
+        return user
+    
+    async def get_by_name(self, username: str):
+        query = select(DbUser).filter_by(name=username)
         queryResult = await self.db.execute(query)
         user = queryResult.scalars().first()
         if not user:

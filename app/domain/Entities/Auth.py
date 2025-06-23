@@ -4,9 +4,9 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import relationship
 from datetime import datetime, timedelta
+from passlib.context import CryptContext
 from app.domain.Base import EntityMeta
 from sqlalchemy.orm import Mapped, mapped_column
-from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

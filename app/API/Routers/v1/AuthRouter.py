@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi import APIRouter, status, HTTPException
 from app.Application.AppServices.UserAppService import UserService
+from app.Application.AppServices.AuthService import AuthService
 from app.Application.Models.AuthModel import (
     LoginUserModel,
-    RegisterUserModel,
-    TokenResponseModel
 )
 
 authrouter = APIRouter(
@@ -11,8 +10,8 @@ authrouter = APIRouter(
 )
 
 @authrouter.post('/login')
-def login(request_data: LoginRequest):
-    if verify_password(username=request_data.username, password=request_data.password):
+def login(request_data: LoginUserModel):
+    if AuthService.login_user(user_name=request_data.username, password=request_data.password):
         return 'Success'
     else:
         raise HTTPException(status_code=404, detail="User not found")

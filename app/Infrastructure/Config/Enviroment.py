@@ -1,31 +1,14 @@
-from functools import lru_cache
+from dotenv import load_dotenv
 import os
 
-from pydantic_settings import BaseSettings
+load_dotenv()  # Đọc file .env
 
-os.environ["ENV"] = "test"
-@lru_cache
-def get_env_filename():
-    runtime_env = os.getenv("ENV")
-    return f".env.{runtime_env}" if runtime_env else ".env"
+DB_USER = os.getenv("DATABASE_USERNAME")
+DB_PASSWORD = os.getenv("DATABASE_PASSWORD")
+DB_HOST = os.getenv("DATABASE_HOSTNAME")
+DB_PORT = os.getenv("DATABASE_PORT")
+DB_NAME = os.getenv("DATABASE_NAME")
 
-
-class EnviromentSettings(BaseSettings):
-    API_VERSION: str
-    APP_NAME: str
-    DATABASE_DIALECT: str
-    DATABASE_HOSTNAME: str
-    DATABASE_NAME: str
-    DATABASE_PASSWORD: str
-    DATABASE_PORT: int
-    DATABASE_USERNAME: str
-    DEBUG_MODE: bool
-    JWT_SECRET: str
-
-    class Config:
-        env_file = get_env_filename()
-        env_file_encoding = "utf-8"
-
-@lru_cache
-def get_enviroment_variables():
-    return EnviromentSettings()
+DATABASE_URL = (
+    f"mysql+asyncmy://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
