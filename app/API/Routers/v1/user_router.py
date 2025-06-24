@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from typing import List
-from app.Application.AppServices.UserAppService import UserService
-from app.Application.Models.UserModel import (
+from app.application.app_services.user_service import UserService
+from app.application.models.user_model import (
     CreateUserModel,
     UpdateUserModel,
     ResponseUserModel

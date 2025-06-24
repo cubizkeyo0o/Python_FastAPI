@@ -1,18 +1,18 @@
-import uvicorn
 from fastapi import FastAPI
 
-from app.API.Routers.Index import Tags
-from app.Infrastructure.Config.Enviroment import get_enviroment_variables
-from app.API.Routers.v1.UserRouter import userrouter
-from app.API.Routers.v1.AuthRouter import authrouter
-from app.domain.Base import Base
-from app.Infrastructure.database.DatabaseInit import sessionmanager
+from dotenv import load_dotenv
+import os
+from app.api.routers.index import Tags
+from app.api.routers.v1.user_router import userrouter
+from app.api.routers.v1.auth_router import authrouter
+from app.domain.base import Base
+from app.infrastructure.database.database_init import sessionmanager
 
-env = get_enviroment_variables()
+load_dotenv()  # read file .env
 
 app = FastAPI(
-    title=env.APP_NAME,
-    version=env.API_VERSION,
+    title=os.getenv("APP_NAME"),
+    version=os.getenv("API_VERSION"),
     openapi_tags=Tags,
 )
 

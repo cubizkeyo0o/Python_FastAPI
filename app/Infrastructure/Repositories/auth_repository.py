@@ -1,10 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
-from app.Infrastructure.database.DatabaseInit import get_db_session
-from app.domain.entities.Auth import (
-    RegisterUserDto,
-    LoginUserDto,
-    TokenResponseDto,
+from app.infrastructure.database.database_init import get_db_session
+from app.domain.entities.auth import (
     Auth as DbAuth
 )
 

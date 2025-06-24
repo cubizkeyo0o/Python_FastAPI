@@ -1,14 +1,13 @@
 from fastapi import Depends
 from typing import List
-from logging import Logger
 
-from app.Infrastructure.Repositories.UserRepository import UserRepository, get_user_repository
-from app.Application.Models.UserModel import(
+from app.infrastructure.repositories.user_repository import UserRepository, get_user_repository
+from app.application.models.user_model import(
     CreateUserModel,
     UpdateUserModel,
     ResponseUserModel
 )
-from app.domain.entities.User import (
+from app.domain.entities.user import (
     UserCreate,
     UserUpdate,
 )

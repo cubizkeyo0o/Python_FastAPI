@@ -1,16 +1,15 @@
 from datetime import datetime
 from sqlalchemy import (
     Column,
-    Integer,
     String,
     DateTime,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 from pydantic import BaseModel
 
-from app.Application.Models.UserModel import ResponseUserModel
+from app.application.models.user_model import ResponseUserModel
 
-from app.domain.Base import EntityMeta
+from app.domain.base import EntityMeta
 
 class User(EntityMeta):
     __tablename__ = "users"

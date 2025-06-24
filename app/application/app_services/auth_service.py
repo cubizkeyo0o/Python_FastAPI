@@ -1,13 +1,13 @@
 from datetime import timedelta
 from fastapi import Depends
-from app.Infrastructure.Repositories.AuthRepository import AuthRepository
-from app.domain.entities.Auth import AuthHelper, RegisterUserDto, LoginUserDto, TokenResponseDto
-from app.Infrastructure.Repositories.UserRepository import UserRepository, get_user_repository
-from app.domain.entities.User import UserCreate
+from app.infrastructure.repositories.auth_repository import AuthRepository
+from app.domain.entities.auth import AuthHelper, RegisterUserDto, TokenResponseDto
+from app.infrastructure.repositories.user_repository import UserRepository, get_user_repository
+from app.domain.entities.user import UserCreate
 
 class AuthService:
     user_Repository = UserRepository
-
+    
     def __init__(self, userRepository: UserRepository = Depends(get_user_repository)):
         self.user_repository = userRepository
         self.auth_repository = AuthRepository

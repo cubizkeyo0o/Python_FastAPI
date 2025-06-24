@@ -1,3 +1,4 @@
+from app.domain.base import EntityMeta
 import sys
 import asyncio
 from pathlib import Path
@@ -8,8 +9,6 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-from app.domain.entities.User import User
-from app.domain.entities.Auth import Auth
 
 project_root = str(Path(__file__).parents[4])
 sys.path.append(project_root)
@@ -25,7 +24,6 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from app.domain.Base import EntityMeta
 target_metadata = EntityMeta.metadata
 #target_metadata = None
 
