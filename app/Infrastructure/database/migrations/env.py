@@ -1,14 +1,18 @@
 from app.domain.base import EntityMeta
+from app.infrastructure.database.database_init import DATABASE_URL
 import sys
 import asyncio
 from pathlib import Path
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from alembic import context
+# Remember add base entity to update
+from app.domain.entities.user import User
+from app.domain.entities.auth import Auth
 
 project_root = str(Path(__file__).parents[4])
 sys.path.append(project_root)
@@ -16,7 +20,7 @@ sys.path.append(project_root)
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
