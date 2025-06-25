@@ -1,7 +1,7 @@
 from fastapi import Depends
 from typing import List
 
-from app.infrastructure.repositories.user_repository import UserRepository, get_user_repository
+from app.infrastructure.database.repositories.user_repository import UserRepository, get_user_repository
 from app.application.models.user_model import(
     CreateUserModel,
     UpdateUserModel,

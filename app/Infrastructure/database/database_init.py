@@ -1,10 +1,4 @@
-from ..config.enviroment import DATABASE_URL
-
-
-#from app.Infrastructure.Config.Enviroment import get_enviroment_variables
-
-# Runtime Environment Configuration
-#env = get_enviroment_variables()
+from ...config import DATABASE_URL
 
 import contextlib
 from typing import Any, AsyncIterator
@@ -16,8 +10,9 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.ext.asyncio import AsyncAttrs
 
-class Base(DeclarativeBase):
+class Base(AsyncAttrs, DeclarativeBase):
     # https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html#preventing-implicit-io-when-using-asyncsession
     __mapper_args__ = {"eager_defaults": True}
 

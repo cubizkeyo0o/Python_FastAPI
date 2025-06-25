@@ -5,8 +5,7 @@ import os
 from app.api.routers.index import Tags
 from app.api.routers.v1.user_router import userrouter
 from app.api.routers.v1.auth_router import authrouter
-from app.domain.base import Base
-from app.infrastructure.database.database_init import sessionmanager
+from app.infrastructure.database.database_init import sessionmanager, Base
 
 load_dotenv()  # read file .env
 

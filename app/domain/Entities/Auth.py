@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy.orm import relationship
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
-from app.domain.base import EntityMeta
+from app.infrastructure.database.database_init import Base
 from sqlalchemy.orm import Mapped, mapped_column
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -14,14 +14,6 @@ class AuthHelper:
     SECRET_KEY = "your_secret_key"
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 60
-
-    @staticmethod
-    def hash_password(password: str) -> str:
-        return pwd_context.hash(password)
-
-    @staticmethod
-    def verify_password(plain_password: str, hashed_password: str) -> bool:
-        return pwd_context.verify(plain_password, hashed_password)
 
     @staticmethod
     def create_access_token(data: dict, expires_delta: timedelta = None):
@@ -33,7 +25,7 @@ class AuthHelper:
         to_encode.update({"exp": expire})
         return jwt.encode(to_encode, AuthHelper.SECRET_KEY, algorithm=AuthHelper.ALGORITHM)
 
-class Auth(EntityMeta):
+class Auth(Base):
     __tablename__ = "auth_sessions"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)

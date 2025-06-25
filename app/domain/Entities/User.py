@@ -9,9 +9,9 @@ from pydantic import BaseModel
 
 from app.application.models.user_model import ResponseUserModel
 
-from app.domain.base import EntityMeta
+from app.infrastructure.database.database_init import Base
 
-class User(EntityMeta):
+class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)

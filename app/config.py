@@ -1,7 +1,4 @@
-from dotenv import load_dotenv
 import os
-
-load_dotenv()  # read file .env
 
 DB_USER = os.getenv("DATABASE_USERNAME")
 DB_PASSWORD = os.getenv("DATABASE_PASSWORD")
@@ -12,3 +9,8 @@ DB_NAME = os.getenv("DATABASE_NAME")
 DATABASE_URL = (
     f"mysql+aiomysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
+
+SCECRET_KEY = os.getenv("JWT_SECRET")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRES_MINUTES = 30
+REFRESH_TOKEN_EXPIRES_MINUTES = 15 * 24 * 60  # 15 days

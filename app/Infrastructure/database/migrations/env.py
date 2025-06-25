@@ -1,5 +1,4 @@
-from app.domain.base import EntityMeta
-from app.infrastructure.database.database_init import DATABASE_URL
+from app.infrastructure.database.database_init import DATABASE_URL, Base
 import sys
 import asyncio
 from pathlib import Path
@@ -28,7 +27,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-target_metadata = EntityMeta.metadata
+target_metadata = Base.metadata
 #target_metadata = None
 
 # other values from the config, defined by the needs of env.py,

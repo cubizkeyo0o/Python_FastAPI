@@ -1,8 +1,8 @@
 from datetime import timedelta
 from fastapi import Depends
-from app.infrastructure.repositories.auth_repository import AuthRepository
+from app.infrastructure.database.repositories.auth_repository import AuthRepository
 from app.domain.entities.auth import AuthHelper, RegisterUserDto, TokenResponseDto
-from app.infrastructure.repositories.user_repository import UserRepository, get_user_repository
+from app.infrastructure.database.repositories.user_repository import UserRepository, get_user_repository
 from app.domain.entities.user import UserCreate
 
 class AuthService:
