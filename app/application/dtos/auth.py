@@ -1,6 +1,10 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, UUID4
 
+class TokenPair(BaseModel):
+    access: str
+    refresh: str
+
 class BlackListToken(BaseModel):
     id: UUID4
     expire: datetime

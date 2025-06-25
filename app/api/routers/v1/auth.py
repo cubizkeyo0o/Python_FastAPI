@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.application.app_services.auth_service import AuthService
-from app.application.models.auth_model import (
+from app.application.dtos.auth import (
     LoginUserModel
 )
 
