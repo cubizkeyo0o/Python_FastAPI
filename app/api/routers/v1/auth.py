@@ -4,11 +4,11 @@ from app.application.models.auth_model import (
     LoginUserModel
 )
 
-authrouter = APIRouter(
+router = APIRouter(
     prefix="/v1/auth", tags=["auth"]
 )
 
-@authrouter.post('/login')
+@router.post('/login')
 def login(request_data: LoginUserModel):
     if AuthService.login_user(user_name=request_data.username, password=request_data.password):
         return 'Success'

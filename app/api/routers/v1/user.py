@@ -7,12 +7,12 @@ from app.application.models.user_model import (
     ResponseUserModel
 )
 
-userrouter = APIRouter(
+router = APIRouter(
     prefix="/v1/users", tags=["user"]
 )
 
 # GET all user
-@userrouter.get(
+@router.get(
     "/",
     response_model=List[ResponseUserModel],
     status_code=status.HTTP_200_OK,
@@ -27,7 +27,7 @@ async def get_users(user_service: UserService = Depends()):
             detail="Don't get list user.",
         ) from ex
 
-@userrouter.post(
+@router.post(
     "/",
     response_model=ResponseUserModel,
     status_code=status.HTTP_201_CREATED,
@@ -43,7 +43,7 @@ async def create(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND) from ex
 
 
-@userrouter.patch(
+@router.patch(
     "/{id}",
     response_model=ResponseUserModel,
 )

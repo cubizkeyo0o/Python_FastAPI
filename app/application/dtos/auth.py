@@ -1,4 +1,12 @@
-from pydantic import BaseModel, EmailStr
+from datetime import datetime
+from pydantic import BaseModel, EmailStr, UUID4
+
+class BlackListToken(BaseModel):
+    id: UUID4
+    expire: datetime
+
+    class Config:
+        orm_mode = True
 
 class RegisterUserModel(BaseModel):
     username: str
