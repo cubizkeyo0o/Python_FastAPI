@@ -2,11 +2,20 @@ from typing import Optional
 from pydantic import BaseModel, UUID4, EmailStr, field_validator
 
 class UserBase(BaseModel):
+    user_name: str
+    full_name: str
+
+class UserUpdate(BaseModel):
+    user_name: Optional[str] = None
+    password: Optional[str] = None
+
+class UserResponse(BaseModel):
+    id: UUID4
     email: EmailStr
     full_name: str
 
-class UserCreate(UserBase):
-    password: str
+    class Config:
+        orm_mode = True
 
 
 class User(UserBase):
@@ -16,6 +25,7 @@ class User(UserBase):
         from_attributes = True
 
 class UserRegister(UserBase):
+    email: EmailStr
     password: str
     confirm_password: str
 
@@ -30,19 +40,5 @@ class UserRegister(UserBase):
 
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    user_name: str
     password: str
-
-class CreateUserModel(BaseModel):
-    name: str
-    username: str
-    email: Optional[str] = None
-
-class UpdateUserModel(BaseModel):
-    name: str
-    username: str
-    email: str
-
-class ResponseUserModel(BaseModel):
-    name: str
-    email: str

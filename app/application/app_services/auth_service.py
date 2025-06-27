@@ -33,3 +33,7 @@ class AuthService:
         self.auth_repository.save_token(user.id, access_token)
 
         return TokenResponseDto(access_token=access_token, refresh_token=None)
+    
+    def hass_password(self, password: str):
+        
+
