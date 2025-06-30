@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Response, Cookie
-from fastapi.exceptions import RequestValidationError
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from app.application.app_services.user_service import UserService
-from app.application.dtos.auth import TokenPair, BlackListToken
+from app.application.app_services.auth_service import AuthService
+from app.application.dtos.auth import TokenPair
 from app.application.dtos.user import UserRegister, UserLogin, UserResponse
 
 router = APIRouter(
@@ -12,15 +12,20 @@ router = APIRouter(
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-@router.post('/login')
+@router.post('/login', response_model=TokenPair)
 async def login(
     request_data: UserLogin,
-    user_service: UserService = Depends()
+    user_service: UserService = Depends(),
+    auth_service: AuthService = Depends()
     ):
-    if AuthService.login_user(user_name=request_data.user_name, password=request_data.password):
-        return 'Success'
-    else:
-        raise HTTPException(status_code=404, detail="User not found")
+    login_succes_user = await user_service.login_account(request_data)
+
+    if not login_succes_user:
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+
+    token_pair = auth_service.generate_token_pair(login_succes_user.id)
+    return token_pair
+
     
 @router.post('/register', response_model=UserResponse)
 async def register(

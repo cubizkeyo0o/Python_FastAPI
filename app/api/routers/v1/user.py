@@ -1,11 +1,8 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from typing import List
+from uuid import UUID
 from app.application.app_services.user_service import UserService
-from app.application.dtos.user import (
-    CreateUserModel,
-    UpdateUserModel,
-    ResponseUserModel
-)
+from app.application.dtos.user import UserResponse, UserRegister, UserUpdate
 
 router = APIRouter(
     prefix="/v1/users", tags=["user"]
@@ -14,7 +11,7 @@ router = APIRouter(
 # GET all user
 @router.get(
     "/",
-    response_model=List[ResponseUserModel],
+    response_model=List[UserResponse],
     status_code=status.HTTP_200_OK,
 )
 async def get_users(user_service: UserService = Depends()):
@@ -29,15 +26,15 @@ async def get_users(user_service: UserService = Depends()):
 
 @router.post(
     "/",
-    response_model=ResponseUserModel,
+    response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
 )
 async def create(
-    user: CreateUserModel,
+    user: UserRegister,
     userService: UserService = Depends(),
     ):
     try:
-        response = await userService.create_async(user_body=user)
+        response = await userService.create_async(user_register=user)
         return response
     except Exception as ex:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND) from ex
@@ -45,15 +42,15 @@ async def create(
 
 @router.patch(
     "/{id}",
-    response_model=ResponseUserModel,
+    response_model=UserResponse,
 )
 async def update(
-    id: int,
-    user: UpdateUserModel,
+    id: UUID,
+    user: UserUpdate,
     userService: UserService = Depends(),
 ):
     try:
-        response = await userService.update_async(id, user_body=user)
+        response = await userService.update_async(user_id=id, user_body=user)
         return response
     except Exception as ex:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND) from ex

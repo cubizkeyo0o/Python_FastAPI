@@ -6,13 +6,16 @@ class UserBase(BaseModel):
     full_name: str
 
 class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[str] = None
     user_name: Optional[str] = None
     password: Optional[str] = None
 
 class UserResponse(BaseModel):
     id: UUID4
-    email: EmailStr
     full_name: str
+    user_name: str
+    email: EmailStr
 
     class Config:
         orm_mode = True
@@ -25,7 +28,7 @@ class User(UserBase):
         from_attributes = True
 
 class UserRegister(UserBase):
-    email: EmailStr
+    email: Optional[EmailStr] = None
     password: str
     confirm_password: str
 

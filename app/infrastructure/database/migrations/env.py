@@ -10,7 +10,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 # Remember add base entity to update
-from app.infrastructure.database.models.user import UserDb
+from app.domain.models.user import UserDb
 
 project_root = str(Path(__file__).parents[4])
 sys.path.append(project_root)
