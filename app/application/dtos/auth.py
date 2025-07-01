@@ -1,19 +1,25 @@
 from datetime import datetime
 from pydantic import BaseModel, UUID4
+from typing import Optional
+
+from app.application.dtos.user import UserResponse
 
 class TokenPair(BaseModel):
     access_token: str
     refresh_token: str
 
+class TokenPairRegisterResponse(TokenPair):
+    user: UserResponse
+
 class PayloadToken(BaseModel):
-    subject: str
-    expiration_time: str
-    issued_at: datetime
-    jwt_id: str
+    sub: str
+    exp: Optional[str] = None
+    iat: datetime
+    jti: Optional[str] = None
 
 class BlackListToken(BaseModel):
     id: UUID4
     expire: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -1,5 +1,6 @@
 from typing import Optional
-from pydantic import BaseModel, UUID4, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator
+from uuid import UUID
 
 class UserBase(BaseModel):
     user_name: str
@@ -12,17 +13,17 @@ class UserUpdate(BaseModel):
     password: Optional[str] = None
 
 class UserResponse(BaseModel):
-    id: UUID4
+    id: UUID
     full_name: str
     user_name: str
     email: EmailStr
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class User(UserBase):
-    id: UUID4
+    id: UUID
     
     class Config:
         from_attributes = True
@@ -33,8 +34,8 @@ class UserRegister(UserBase):
     confirm_password: str
 
     @field_validator("confirm_password")
-    def verify_password_match(cls, v, values, **kwargs):
-        password = values.get("password")
+    def verify_password_match(cls, v, values):
+        password = values.data.get("password")
 
         if v != password:
             raise ValueError("The two passwords did not match.")

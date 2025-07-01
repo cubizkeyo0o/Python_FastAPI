@@ -1,7 +1,9 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from uuid import uuid4
+from sqlalchemy import update
+from typing import Optional
+from uuid import uuid4, UUID
 
 from app.infrastructure.database.database_init import get_db_session
 from app.domain.models.user import UserDb
@@ -34,7 +36,7 @@ class UserRepository:
         return user
     
     async def get_by_username_async(self, username: str):
-        query = select(UserDb).filter_by(username=username)
+        query = select(UserDb).filter_by(user_name=username)
         queryResult = await self.db.execute(query)
         user = queryResult.scalars().first()
         return user
@@ -42,16 +44,27 @@ class UserRepository:
     async def create_async(self, user_create: UserDb) -> UserDb:
         user_create.id = uuid4()
         self.db.add(user_create)
-        await self.db.commit()
-
         return user_create
     
-    async def update_async(self, user_update: UserDb):
-        await self.db.refresh(user_update)
-        await self.db.commit()
-        return user_update
+    async def update_async(self, user_id: UUID, values: dict) -> Optional[UserDb]:
+        if not values:
+            return await self.get_by_id_async(user_id)
+        
+        stmt = (
+            update(UserDb)
+            .where(UserDb.id == user_id)
+            .values(**values)
+            .execution_options(synchronize_session="fetch")
+        )
+        
+        await self.db.execute(stmt)
+        await self.db.flush()
+        
+        result = await self.db.execute(select(UserDb).where(UserDb.id == user_id))
+        user_db = result.scalar_one_or_none()
+        return user_db if user_db else None
     
-    async def delete_async(self, id: int):
+    async def delete_async(self, id: int) -> None:
         query = select(UserDb).filter_by(id=id)
         queryResult = await self.db.execute(query)
         existing_user = queryResult.scalars().first()
@@ -60,7 +73,7 @@ class UserRepository:
             return None
         
         await self.db.delete(existing_user)
-        return {"message": "User deleted successfully"}
+        return None
 
 async def get_user_repository(db: AsyncSession = Depends(get_db_session)) -> UserRepository:
         return UserRepository(db)

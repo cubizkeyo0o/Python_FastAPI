@@ -42,7 +42,7 @@ class UserService:
         return True
 
     async def check_exist_user_name(self, name: str) -> bool:
-        user = await self.userRepository.get_by_username_async(name=name)
+        user = await self.userRepository.get_by_username_async(username=name)
         if not user:
             return False
         return True
@@ -51,11 +51,11 @@ class UserService:
         new_user = UserDb(full_name=user_register.full_name, user_name=user_register.user_name, email=user_register.email)
         
         # hash password
-        new_user["password_hash"] = hash_password(user_register.password)
+        new_user.password_hash = hash_password(user_register.password)
 
         user_created = await self.userRepository.create_async(new_user)
         
-        return UserResponse(id=user_created.id, email=user_created.email, full_name=user_created.full_name)
+        return UserResponse(id=user_created.id, email=user_created.email, full_name=user_created.full_name, user_name=user_created.user_name)
 
     async def update_async(self, user_id: UUID, user_body: UserUpdate) -> UserResponse:
         user_exist = await self.userRepository.get_by_id_async(user_id)

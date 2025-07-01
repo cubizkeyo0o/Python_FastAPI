@@ -11,8 +11,8 @@ class AuthService:
     def __init__(self, userRepository: UserRepository = Depends(get_user_repository)):
         self.user_repository = userRepository
 
-    def generate_token_pair(user_id: UUID) -> TokenPair:
-        payload = PayloadToken(subject=user_id, jwt_id=str(uuid4()), issued_at=datetime.now(timezone.utc))
+    def generate_token_pair(self, user_id: UUID) -> TokenPair:
+        payload = PayloadToken(sub=str(user_id), jti=str(uuid4()), iat=datetime.now(timezone.utc))
         return create_token_pair(payload=payload)
 
         
