@@ -24,15 +24,15 @@ def _create_refresh_token(payload: dict):
 
 def create_token_pair(payload: PayloadToken) -> TokenPair:
     return TokenPair(
-        access=_create_access_token(payload={**payload.model_dump()}),
-        refresh=_create_refresh_token(payload={**payload.model_dump()}),
+        access_token=_create_access_token(payload={**payload.to_short().model_dump()}),
+        refresh_token=_create_refresh_token(payload={**payload.to_short().model_dump()}),
     )
 
 def decode_access_token(token: str) -> PayloadToken:
     try:
         payload_decoded = jwt.decode(token, key=SECRET_KEY, algorithms=[ALGORITHM])
         short_payload = PayloadTokenShort(**payload_decoded)
-        return PayloadToken.from_short(short_payload)
+        return short_payload.to_full()
     
     except ExpiredSignatureError:
         raise ValueError("Token expired")
