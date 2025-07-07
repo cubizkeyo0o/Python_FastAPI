@@ -12,14 +12,14 @@ def _create_access_token(payload: dict, expires_delta: timedelta = None):
 
     payload[EXP] = expire
 
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(payload=payload, key=SECRET_KEY, algorithm=ALGORITHM)
 
 def _create_refresh_token(payload: dict):
     expire = datetime.now(timezone.utc) + timedelta(minutes=REFRESH_TOKEN_EXPIRES_MINUTES)
 
     payload[EXP] = expire
 
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(payload=payload, key=SECRET_KEY, algorithm=ALGORITHM)
 
 
 def create_token_pair(payload: PayloadToken) -> TokenPair:

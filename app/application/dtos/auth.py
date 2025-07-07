@@ -2,10 +2,16 @@ from datetime import datetime
 from pydantic import BaseModel, UUID4
 from __future__ import annotations
 from config import SUB, EXP, IAT, JTI
+from typing import Optional
+
+from app.application.dtos.user import UserResponse
 
 class TokenPair(BaseModel):
     access_token: str
     refresh_token: str
+
+class TokenPairRegisterResponse(TokenPair):
+    user: UserResponse
 
 class PayloadToken(BaseModel):
     subject: str
@@ -42,4 +48,4 @@ class BlackListToken(BaseModel):
     expire: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
