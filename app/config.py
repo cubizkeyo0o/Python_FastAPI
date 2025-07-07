@@ -14,6 +14,14 @@ DATABASE_URL = (
 )
 
 SECRET_KEY = os.getenv("JWT_SECRET")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRES_MINUTES = 30
 REFRESH_TOKEN_EXPIRES_MINUTES = 15 * 24 * 60  # 15 days
+
+# payload
+REFRESH_COOKIE_NAME = "refresh"
+SUB = "sub"
+EXP = "exp"
+IAT = "iat"
+JTI = "jti"

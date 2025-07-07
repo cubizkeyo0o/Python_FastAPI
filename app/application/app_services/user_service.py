@@ -57,6 +57,14 @@ class UserService:
         
         return UserResponse(id=user_created.id, email=user_created.email, full_name=user_created.full_name)
 
+    async def get_by_id_async(self, user_id: UUID) -> UserResponse:
+        user_exist = await self.userRepository.get_by_id_async(id=user_id)
+        
+        if user_exist is None:
+            raise Exception("User not found")
+        
+        return UserResponse(id=user_exist.id, full_name=user_exist.full_name, user_name=user_exist.user_name, email=user_exist.email)
+
     async def update_async(self, user_id: UUID, user_body: UserUpdate) -> UserResponse:
         user_exist = await self.userRepository.get_by_id_async(user_id)
         
