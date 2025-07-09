@@ -1,17 +1,17 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 
-from app.api.exceptions.exception import NotFoundException
+from app.utils.exceptions.http_exceptions import NotFoundException
 from app.application.app_services.openai_service import OpenAIService
 from app.application.app_services.auth_service import AuthService
 from app.application.app_services.user_service import UserService
 from app.application.dtos.openai import PromptRequest, PromptResponse
 
-router = APIRouter()
+router = APIRouter(prefix="/v1/openai", tags=["openai"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-@router.post("/openai", response_model=PromptResponse)
+@router.post("/prompt", response_model=PromptResponse, status_code=status.HTTP_200_OK)
 async def generate(token: Annotated[str, Depends(oauth2_scheme)],
                    prompt_request: PromptRequest,
                    openai_service: OpenAIService = Depends(),

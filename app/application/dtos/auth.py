@@ -1,6 +1,6 @@
+from __future__ import annotations
 from datetime import datetime
 from pydantic import BaseModel, UUID4
-from __future__ import annotations
 
 from app.application.dtos.user import UserResponse
 
@@ -20,25 +20,25 @@ class PayloadToken(BaseModel):
     @classmethod
     def to_short(cls) -> PayloadTokenShort:
         return PayloadTokenShort(
-            SUB=cls.subject,
-            EXP=cls.expiration_time,
-            IAT=cls.issued_at,
-            JTI=cls.jwt_id
+            sub=cls.subject,
+            exp=cls.expiration_time,
+            iat=cls.issued_at,
+            jti=cls.jwt_id
         )
 
 class PayloadTokenShort(BaseModel):
-    SUB: str
-    EXP: str
-    IAT: datetime
-    JTI: str
+    sub: str
+    exp: str
+    iat: datetime
+    jti: str
 
     @classmethod
     def to_full(cls) -> PayloadToken:
         return PayloadToken(
-            subject=cls.SUB,
-            expiration_time=cls.EXP,
-            issued_at=cls.IAT,
-            jwt_id=cls.JTI
+            subject=cls.sub,
+            expiration_time=cls.exp,
+            issued_at=cls.iat,
+            jwt_id=cls.jti
         )
 
 class BlackListToken(BaseModel):

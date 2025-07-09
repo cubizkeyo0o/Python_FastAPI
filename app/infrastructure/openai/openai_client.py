@@ -1,7 +1,7 @@
 from openai import AsyncOpenAI
 
-from domain.interfaces.openai_interface import OpenAIServiceInterface
-from config import OPENAI_API_KEY
+from app.domain.interfaces.openai_interface import OpenAIServiceInterface
+from app.config import OPENAI_API_KEY
 
 class OpenAIClient(OpenAIServiceInterface):
     def __init__(self):

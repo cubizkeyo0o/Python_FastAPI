@@ -6,5 +6,9 @@ Tags = [
     {
         "name": "auth",
         "description": "Login or Logout for Users",
+    },
+    {
+        "name": "openai",
+        "description": "Prompt AI from OpenAI api",
     }
 ]
