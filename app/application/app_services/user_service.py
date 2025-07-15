@@ -2,6 +2,7 @@ from fastapi import Depends
 from typing import List
 from uuid import UUID
 
+from app.utils.exceptions.auth_exceptions import InvalidCredentialsException
 from app.infrastructure.database.repositories.user_repository import UserRepository, get_user_repository
 from app.infrastructure.security.hash import hash_password, verify_password
 from app.domain.models.user import UserDb
@@ -22,12 +23,12 @@ class UserService:
         user_exist = await self.userRepository.get_by_username_async(username=user_login.user_name)
 
         if user_exist is None:
-            raise Exception("User not exist")
+            raise InvalidCredentialsException("Invalid username")
         
         is_valid_password = verify_password(user_login.password, user_exist.password_hash)
 
         if not is_valid_password:
-            raise Exception("Wrong password, please enter again !")
+            raise InvalidCredentialsException("Invalid password")
         
         return UserResponse(id=user_exist.id, full_name=user_exist.full_name, user_name=user_exist.user_name, email=user_exist.email)
 

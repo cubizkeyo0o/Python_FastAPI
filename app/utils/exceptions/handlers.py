@@ -42,5 +42,5 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 async def unhandled_exception_handler(request: Request, exc: Exception):
-    logger.exception(f"[UnhandledException] {str(exc)}")
+    #logger.exception(f"[UnhandledException] {str(exc)}")
     return build_rest_error_response(500, "Internal server error")

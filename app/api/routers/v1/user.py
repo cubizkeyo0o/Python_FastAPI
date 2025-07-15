@@ -33,11 +33,8 @@ async def create(
     user: UserRegister,
     userService: UserService = Depends(),
     ):
-    try:
-        response = await userService.create_async(user_register=user)
-        return response
-    except Exception as ex:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND) from ex
+    response = await userService.create_async(user_register=user)
+    return response
 
 
 @router.patch(

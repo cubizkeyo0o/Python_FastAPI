@@ -1,12 +1,45 @@
 import jwt
 from jwt import ExpiredSignatureError, InvalidTokenError
-from fastapi import Response
+from fastapi import Response, Request, Depends
+from fastapi.security import OAuth2PasswordBearer
 from datetime import timedelta, datetime, timezone
+from uuid import UUID
 
 from app.application.dtos.auth import TokenPair, PayloadToken, PayloadTokenShort
-from app.utils.exceptions.auth_exceptions import TokenExpiredException, InvalidTokenException
+from app.utils.exceptions.auth_exceptions import TokenExpiredException, InvalidTokenException, MissingTokenException, BlackListTokenException
+from app.utils.exceptions.common_exceptions import EntityNotFoundException
+from app.infrastructure.database.repositories.user_repository import UserRepository, get_user_repository
+from app.infrastructure.database.repositories.black_list_token_repository import BlackListTokenRepository, get_black_list_token_repository
 from app.config import ACCESS_TOKEN_EXPIRES_MINUTES, REFRESH_TOKEN_EXPIRES_MINUTES, ALGORITHM, SECRET_KEY, EXP
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+async def authentication_request_handle(request: Request,
+                                        token: str = Depends(oauth2_scheme),
+                                        user_repo: UserRepository = Depends(get_user_repository),
+                                        black_list_token_repo: BlackListTokenRepository = Depends(get_black_list_token_repository)):
+    if not token:
+        raise MissingTokenException()
+
+    try:
+        payload = decode_access_token(token)
+    except Exception:
+        raise InvalidTokenException()
+    
+    black_list_token = await black_list_token_repo.get_by_id_async(id=UUID(payload.jwt_id))
+    if black_list_token:
+        raise BlackListTokenException()
+
+    user_id = payload.subject
+    if not user_id:
+        raise InvalidTokenException()
+
+    user = await user_repo.get_by_id_async(UUID(user_id))
+    if not user:
+        raise EntityNotFoundException(message="User not found")
+    
+    request.state.user = user
+    
 def _create_access_token(payload: dict, expires_delta: timedelta = None):
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=expires_delta or ACCESS_TOKEN_EXPIRES_MINUTES

@@ -14,6 +14,10 @@ class TokenExpiredException(AuthException):
         super().__init__(message)
 
 
+class MissingTokenException(AuthException):
+    def __init__(self, message: str = "Missing token"):
+        super().__init__(message)
+
 class InvalidTokenException(AuthException):
     def __init__(self, message: str = "Invalid token"):
         super().__init__(message)
@@ -31,4 +35,8 @@ class ForbiddenAccessException(AuthException):
 
 class RefreshTokenExpiredException(AuthException):
     def __init__(self, message: str = "Refresh token has expired"):
+        super().__init__(message)
+
+class BlackListTokenException(AuthException):
+    def __init__(self, message: str = "Token is blacklisted"):
         super().__init__(message)

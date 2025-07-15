@@ -4,13 +4,14 @@ from fastapi.security import OAuth2PasswordBearer
 from app.application.app_services.user_service import UserService
 from app.application.app_services.auth_service import AuthService
 from app.application.dtos.auth import TokenPair, TokenPairRegisterResponse
-from app.application.dtos.user import UserRegister, UserLogin, UserResponse
+from app.application.dtos.user import UserRegister, UserLogin
+from app.utils.exceptions.http_exceptions import InternalServerErrorException
 
 router = APIRouter(
     prefix="/v1/auth", tags=["auth"]
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.post('/login', response_model=TokenPair)
 async def login(
@@ -21,7 +22,7 @@ async def login(
     login_succes_user = await user_service.login_account(request_data)
 
     if not login_succes_user:
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        raise InternalServerErrorException()
 
     token_pair = auth_service.generate_token_pair(login_succes_user.id)
     return token_pair
