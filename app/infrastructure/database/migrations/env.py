@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 # Remember add base entity to update
 from app.domain.models.user import UserDb
+from app.domain.models.black_list_token import BlackListToken
 
 project_root = str(Path(__file__).parents[4])
 sys.path.append(project_root)

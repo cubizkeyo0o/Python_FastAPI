@@ -12,7 +12,7 @@ from app.infrastructure.database.repositories.user_repository import UserReposit
 from app.infrastructure.database.repositories.black_list_token_repository import BlackListTokenRepository, get_black_list_token_repository
 from app.config import ACCESS_TOKEN_EXPIRES_MINUTES, REFRESH_TOKEN_EXPIRES_MINUTES, ALGORITHM, SECRET_KEY, EXP
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
 
 async def authentication_request_handle(request: Request,
                                         token: str = Depends(oauth2_scheme),

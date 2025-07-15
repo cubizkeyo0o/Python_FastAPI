@@ -14,7 +14,7 @@ class TokenPairRegisterResponse(TokenPair):
 
 class PayloadToken(BaseModel):
     subject: str
-    expiration_time: Optional[str] = None
+    expiration_time: Optional[datetime] = None
     issued_at: datetime
     jwt_id: str
     
@@ -28,7 +28,7 @@ class PayloadToken(BaseModel):
 
 class PayloadTokenShort(BaseModel):
     sub: str
-    exp: Optional[str] = None
+    exp: Optional[datetime] = None
     iat: datetime
     jti: str
 
