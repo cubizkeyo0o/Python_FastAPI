@@ -1,16 +1,15 @@
 from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
 
-from app.application.app_services.openai_service import OpenAIService
+from app.application.app_services.ai_service import AIService
 from app.infrastructure.security.jwt import authentication_request_handle
-from app.application.dtos.openai import PromptRequest, PromptResponse
+from app.application.dtos.openai import PromptRequest
 
-router = APIRouter(prefix="/v1/openai", tags=["openai"])
-protected_router = APIRouter(prefix="/v1/openai", tags=["openai"], dependencies=[Depends(authentication_request_handle)])
+router = APIRouter(prefix="/v1/ai", tags=["ai"])
+protected_router = APIRouter(prefix="/v1/ai", tags=["ai"], dependencies=[Depends(authentication_request_handle)])
 
-@protected_router.post("/prompt", response_model=PromptResponse, status_code=status.HTTP_200_OK)
-async def generate(prompt_request: PromptRequest,
-                   openai_service: OpenAIService = Depends()):
+@protected_router.post("/prompt-gemini", status_code=status.HTTP_200_OK)
+def generate(prompt_request: PromptRequest, 
+             ai_service: AIService = Depends()):
     
-    prompt_respone = await openai_service.generate_response(prompt_request.prompt)
-    
-    return PromptResponse(response=prompt_respone)
+    return StreamingResponse(ai_service.prompt_gemini(prompt_request.prompt), media_type="text/plain")
