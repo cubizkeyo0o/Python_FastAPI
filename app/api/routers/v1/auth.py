@@ -1,30 +1,39 @@
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, HTTPException, Depends, Response
+from fastapi.security import OAuth2PasswordRequestForm
 
 from app.application.app_services.user_service import UserService
 from app.application.app_services.auth_service import AuthService
-from app.application.dtos.auth import TokenPair, TokenPairRegisterResponse
-from app.application.dtos.user import UserRegister, UserLogin, UserResponse
+from app.application.dtos.auth import TokenPairRegisterResponse
+from app.application.dtos.user import UserRegister, UserLogin
+from app.utils.exceptions.http_exceptions import InternalServerErrorException
 
 router = APIRouter(
     prefix="/v1/auth", tags=["auth"]
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
-@router.post('/login', response_model=TokenPair)
+@router.post('/login')
 async def login(
-    request_data: UserLogin,
+    response: Response,
     user_service: UserService = Depends(),
-    auth_service: AuthService = Depends()
+    auth_service: AuthService = Depends(),
+    form_data: OAuth2PasswordRequestForm = Depends(),
     ):
-    login_succes_user = await user_service.login_account(request_data)
+    username = form_data.username
+    password = form_data.password
+    user_login = UserLogin(user_name=username, password=password)
+    login_succes_user = await user_service.login_account(user_login)
 
     if not login_succes_user:
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        raise InternalServerErrorException()
 
     token_pair = auth_service.generate_token_pair(login_succes_user.id)
-    return token_pair
+
+    auth_service.add_refresh_token_cookie(response, token_pair.refresh_token)
+
+    return {
+            "access_token": token_pair.access_token,
+            "token_type": "bearer"
+            }
 
     
 @router.post('/register', response_model=TokenPairRegisterResponse)

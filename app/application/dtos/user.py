@@ -2,6 +2,8 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, field_validator
 from uuid import UUID
 
+from app.utils.exceptions.common_exceptions import NotMatchException
+
 class UserBase(BaseModel):
     user_name: str
     full_name: str
@@ -38,7 +40,7 @@ class UserRegister(UserBase):
         password = values.data.get("password")
 
         if v != password:
-            raise ValueError("The two passwords did not match.")
+            raise NotMatchException("The two passwords did not match.")
 
         return v
 

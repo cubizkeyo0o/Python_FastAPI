@@ -29,7 +29,7 @@ class UserRepository:
         user = queryResult.scalars().first()
         return user
         
-    async def get_by_id_async(self, id: int):
+    async def get_by_id_async(self, id: UUID):
         query = select(UserDb).filter_by(id=id)
         queryResult = await self.db.execute(query)
         user = queryResult.scalars().first()
@@ -64,7 +64,7 @@ class UserRepository:
         user_db = result.scalar_one_or_none()
         return user_db if user_db else None
     
-    async def delete_async(self, id: int) -> None:
+    async def delete_async(self, id: UUID) -> None:
         query = select(UserDb).filter_by(id=id)
         queryResult = await self.db.execute(query)
         existing_user = queryResult.scalars().first()

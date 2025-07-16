@@ -6,6 +6,9 @@ exception_status_map = {
     # Not found
     EntityNotFoundException: 404,
 
+    # Not match
+    NotMatchException: 400,
+
     # Conflict
     ConflictException: 409,
 

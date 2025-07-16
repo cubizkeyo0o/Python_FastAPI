@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, UUID4
 
@@ -13,32 +14,30 @@ class TokenPairRegisterResponse(TokenPair):
 
 class PayloadToken(BaseModel):
     subject: str
-    expiration_time: str
+    expiration_time: Optional[datetime] = None
     issued_at: datetime
     jwt_id: str
     
-    @classmethod
-    def to_short(cls) -> PayloadTokenShort:
+    def to_short(self) -> PayloadTokenShort:
         return PayloadTokenShort(
-            sub=cls.subject,
-            exp=cls.expiration_time,
-            iat=cls.issued_at,
-            jti=cls.jwt_id
+            sub=self.subject,
+            exp=self.expiration_time,
+            iat=self.issued_at,
+            jti=self.jwt_id
         )
 
 class PayloadTokenShort(BaseModel):
     sub: str
-    exp: str
+    exp: Optional[datetime] = None
     iat: datetime
     jti: str
 
-    @classmethod
-    def to_full(cls) -> PayloadToken:
+    def to_full(self) -> PayloadToken:
         return PayloadToken(
-            subject=cls.sub,
-            expiration_time=cls.exp,
-            issued_at=cls.iat,
-            jwt_id=cls.jti
+            subject=self.sub,
+            expiration_time=self.exp,
+            issued_at=self.iat,
+            jwt_id=self.jti
         )
 
 class BlackListToken(BaseModel):

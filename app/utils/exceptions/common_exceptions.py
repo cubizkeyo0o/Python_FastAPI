@@ -3,6 +3,9 @@ class CommonException(Exception):
         self.message = message
         super().__init__(message)
 
+class NotMatchException(CommonException):
+    pass
+
 class EntityNotFoundException(CommonException):
     pass
 
