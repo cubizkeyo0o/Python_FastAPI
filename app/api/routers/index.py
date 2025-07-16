@@ -8,7 +8,7 @@ Tags = [
         "description": "Login or Logout for Users",
     },
     {
-        "name": "openai",
-        "description": "Prompt AI from OpenAI api",
+        "name": "ai",
+        "description": "Prompt AI from OpenAI api or GeminiAI api",
     }
 ]
