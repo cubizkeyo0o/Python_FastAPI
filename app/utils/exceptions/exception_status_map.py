@@ -16,4 +16,5 @@ exception_status_map = {
     BusinessRuleViolationException: 400,
 
     # Other
+    NoRoleAssignedException: 403,
 }

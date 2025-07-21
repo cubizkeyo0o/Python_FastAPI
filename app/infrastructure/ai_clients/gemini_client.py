@@ -7,10 +7,14 @@ class GeminiAIClient(AIServiceInterface):
     def __init__(self):
         self._client = genai.Client(api_key=GEMINI_API_KEY)
 
-    def generate_text(self, prompt: str):
+    def generate_text(self, prompt: dict):
         response_stream = self._client.models.generate_content_stream(    
             model="gemini-2.5-flash", contents=prompt
         )
 
+        ai_chunks = []
         for chunk in response_stream:
-            yield chunk.text or ""   
+            ai_chunks.append(chunk.text)
+            yield chunk.text or ""
+
+        return " ".join(ai_chunks)
