@@ -24,6 +24,7 @@ async def get_users(user_service: UserService = Depends()):
             detail="Don't get list user.",
         ) from ex
 
+# Create new user
 @router.post(
     "/",
     response_model=UserResponse,
@@ -36,7 +37,7 @@ async def create(
     response = await userService.create_async(user_register=user)
     return response
 
-
+# Update exist user
 @router.patch(
     "/{id}",
     response_model=UserResponse,

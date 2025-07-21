@@ -7,7 +7,7 @@ from uuid import UUID
 
 from app.application.dtos.auth import TokenPair, PayloadToken, PayloadTokenShort
 from app.utils.exceptions.auth_exceptions import TokenExpiredException, InvalidTokenException, MissingTokenException, BlackListTokenException
-from app.utils.exceptions.common_exceptions import EntityNotFoundException
+from app.utils.exceptions.common_exceptions import EntityNotFoundException, NoRoleAssignedException
 from app.infrastructure.database.repositories.user_repository import UserRepository, get_user_repository
 from app.infrastructure.database.repositories.black_list_token_repository import BlackListTokenRepository, get_black_list_token_repository
 from app.config import ACCESS_TOKEN_EXPIRES_MINUTES, REFRESH_TOKEN_EXPIRES_MINUTES, ALGORITHM, SECRET_KEY, EXP
@@ -38,7 +38,12 @@ async def authentication_request_handle(request: Request,
     if not user:
         raise EntityNotFoundException(message="User not found")
     
+    roles = payload.roles
+    if not roles:
+        raise NoRoleAssignedException(message="User does not have any assigned roles.")
+    
     request.state.user = user
+    request.state.roles = roles
     
 def _create_access_token(payload: dict, expires_delta: timedelta = None):
     expire = datetime.now(timezone.utc) + timedelta(

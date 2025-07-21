@@ -23,3 +23,6 @@ class InternalServerErrorException(CommonException):
 
 class RequiredException(CommonException):
     pass
+
+class NoRoleAssignedException (CommonException):
+    pass

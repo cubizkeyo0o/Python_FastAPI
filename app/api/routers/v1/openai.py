@@ -12,4 +12,4 @@ protected_router = APIRouter(prefix="/v1/ai", tags=["ai"], dependencies=[Depends
 def generate(prompt_request: PromptRequest, 
              ai_service: AIService = Depends()):
     
-    return StreamingResponse(ai_service.prompt_gemini(prompt_request.prompt), media_type="text/plain")
+    return StreamingResponse(ai_service.prompt_gemini(prompt_request.content), media_type="text/plain")

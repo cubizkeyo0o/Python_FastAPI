@@ -9,6 +9,8 @@ from app.api.routers.v1.user import router as user_router
 from app.api.routers.v1.auth import router as auth_router
 from app.api.routers.v1.openai import router as openai_router
 from app.api.routers.v1.openai import protected_router as openai_protected_router
+from app.api.routers.v1.session import protected_router as session_protected_router
+from app.api.routers.v1.message import protected_router as message_protected_router
 from app.utils.exceptions.handlers import (
     common_exception_handler,
     validation_exception_handler,
@@ -41,3 +43,5 @@ app.include_router(user_router)
 app.include_router(auth_router)
 app.include_router(openai_router)
 app.include_router(openai_protected_router)
+app.include_router(session_protected_router)
+app.include_router(message_protected_router)

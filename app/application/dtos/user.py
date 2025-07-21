@@ -12,12 +12,14 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     email: Optional[str] = None
     user_name: Optional[str] = None
+    role: Optional[str] = None
     password: Optional[str] = None
 
 class UserResponse(BaseModel):
     id: UUID
     full_name: str
     user_name: str
+    role: str
     email: EmailStr
 
     class Config:
@@ -34,6 +36,7 @@ class UserRegister(UserBase):
     email: Optional[EmailStr] = None
     password: str
     confirm_password: str
+    role: str
 
     @field_validator("confirm_password")
     def verify_password_match(cls, v, values):
