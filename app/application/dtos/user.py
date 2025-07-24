@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr, field_validator
 from uuid import UUID
 
@@ -10,16 +10,21 @@ class UserBase(BaseModel):
 
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     user_name: Optional[str] = None
-    role: Optional[str] = None
+    roles: Optional[List[str]] = None
     password: Optional[str] = None
+
+    @field_validator("roles", mode="before")
+    def normalize_roles(cls, v):
+        if isinstance(v, list) and all(isinstance(item, str) for item in v):
+            return [role.strip().upper() for role in v]
 
 class UserResponse(BaseModel):
     id: UUID
     full_name: str
     user_name: str
-    role: str
+    roles: Optional[List[str]] = None
     email: EmailStr
 
     class Config:
@@ -36,7 +41,7 @@ class UserRegister(UserBase):
     email: Optional[EmailStr] = None
     password: str
     confirm_password: str
-    role: str
+    roles: List[str]
 
     @field_validator("confirm_password")
     def verify_password_match(cls, v, values):
@@ -46,6 +51,12 @@ class UserRegister(UserBase):
             raise NotMatchException("The two passwords did not match.")
 
         return v
+    
+    @field_validator("roles", mode="before")
+    def normalize_roles(cls, v):
+        if isinstance(v, list) and all(isinstance(item, str) for item in v):
+            return [role.strip().upper() for role in v]
+        raise ValueError("roles must be a list of strings")
 
 
 class UserLogin(BaseModel):

@@ -2,12 +2,11 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import update
-from typing import Optional
+from typing import Optional, List
 from uuid import uuid4, UUID
 
 from app.infrastructure.database.database_init import get_db_session
 from app.domain.models.user import UserDb
-from app.domain.models.role import Role
 
 class UserRepository:
     db: AsyncSession
@@ -75,12 +74,6 @@ class UserRepository:
         
         await self.db.delete(existing_user)
         return None
-    
-    async def get_role_by_user(self, user_id: UUID) -> Role:
-        query = select(Role).filter_by(user_id=user_id)
-        queryResult = await self.db.execute(query)
-        role = queryResult.scalars().first()
-        return role
 
 async def get_user_repository(db: AsyncSession = Depends(get_db_session)) -> UserRepository:
         return UserRepository(db)

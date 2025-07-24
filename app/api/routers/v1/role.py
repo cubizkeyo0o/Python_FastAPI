@@ -1,12 +1,10 @@
-from fastapi import APIRouter, Depends, status, HTTPException
-from typing import List
-from uuid import UUID
-from app.application.app_services.user_service import UserService
-from app.application.dtos.user import UserResponse, UserRegister, UserUpdate
+from fastapi import APIRouter, Depends, status
+from fastapi.responses import StreamingResponse
 
-router = APIRouter(
-    prefix="/v1/users", tags=["user"]
-)
+from app.application.app_services.ai_service import AIService
+from app.infrastructure.security.jwt import authentication_request_handle
+
+router = APIRouter(prefix="/v1/role", tags=["role"])
 
 # GET all user
 @router.get(
