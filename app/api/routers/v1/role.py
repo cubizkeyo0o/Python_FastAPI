@@ -1,61 +1,68 @@
-from fastapi import APIRouter, Depends, status
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter, Depends, status, HTTPException
+from typing import List
 
-from app.application.app_services.ai_service import AIService
-from app.infrastructure.security.jwt import authentication_request_handle
+from app.application.app_services.role_service import RoleService
+from app.application.dtos.role import *
+from app.utils.exceptions.common_exceptions import InternalServerErrorException
 
 router = APIRouter(prefix="/v1/role", tags=["role"])
 
-# GET all user
+# GET all role
 @router.get(
     "/",
-    response_model=List[UserResponse],
+    response_model=List[RoleResponse],
     status_code=status.HTTP_200_OK,
 )
-async def get_users(user_service: UserService = Depends()):
+async def get_roles(role_service: RoleService = Depends()):
     try:
-        users = await user_service.get_all_async()
-        return users
+        roles_response = await role_service.get_all_async()
+        return roles_response
     except Exception as ex:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Don't get list user.",
+            detail="Don't get list role.",
         ) from ex
 
-# Create new user
+# Create new role
 @router.post(
     "/",
-    response_model=UserResponse,
+    response_model=RoleResponse,
     status_code=status.HTTP_201_CREATED,
 )
 async def create(
-    user: UserRegister,
-    userService: UserService = Depends(),
+    role_create_request: RoleCreateRequest,
+    role_service: RoleService = Depends(),
     ):
-    response = await userService.create_async(user_register=user)
+    response = await role_service.create_async(role_create_request.to_role_create())
     return response
 
-# Update exist user
+# Update exist role
 @router.patch(
     "/{id}",
-    response_model=UserResponse,
+    response_model=RoleResponse,
 )
 async def update(
     id: UUID,
-    user: UserUpdate,
-    userService: UserService = Depends(),
+    role_update: RoleUpdate,
+    role_service: RoleService = Depends(),
 ):
-    response = await userService.update_async(user_id=id, user_body=user)
+    response = await role_service.update_async(id, role_update)
     return response
 
-# delete exist user
-@router.patch(
+# delete exist role
+@router.delete(
     "/{id}",
-    response_model=UserResponse,
 )
 async def update(
     id: UUID,
-    userService: UserService = Depends(),
+    role_service: RoleService = Depends(),
 ):
-    response = await userService.delete_async(user_id=id)
-    return response
+    delete_success = await role_service.delete_async(id)
+    
+    if not delete_success:
+        raise InternalServerErrorException("Delete role failed")
+
+    return {
+        "success": True,
+        "message": "Deleted successfully"
+    }

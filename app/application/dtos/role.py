@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -9,14 +9,18 @@ class RoleBase(BaseModel):
 
 class RoleCreate(BaseModel):
     name: str
-    normalized_name: str = Field(default_factory=lambda: "", exclude=True)
-    concurrency_stamp: str = Field(default_factory=lambda: str(uuid4()), exclude=True)
+    normalized_name: str
+    concurrency_stamp: str
 
-    @field_validator("name", mode="before")
-    def to_model_dict(cls, v, values):
-        if isinstance(v, str):
-            values
-        return v
+class RoleCreateRequest(BaseModel):
+    name: str
+
+    def to_role_create(self) -> RoleCreate:
+        return RoleCreate(
+            name=self.name,
+            normalized_name=self.name.upper(),
+            concurrency_stamp=str(uuid4())
+        )
 
 class RoleUpdate(BaseModel):
     name: Optional[str] = None
@@ -29,8 +33,7 @@ class RoleUpdate(BaseModel):
             updates["normalized_name"] = self.name.strip().upper()
         return updates
 
-class RoleRead(RoleBase):
-    id: UUID
+class RoleResponse(RoleBase):
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -32,9 +32,9 @@ async def get_users(user_service: UserService = Depends()):
 )
 async def create(
     user: UserRegister,
-    userService: UserService = Depends(),
+    user_service: UserService = Depends(),
     ):
-    response = await userService.create_async(user_register=user)
+    response = await user_service.create_async(user_register=user)
     return response
 
 # Update exist user
@@ -45,19 +45,19 @@ async def create(
 async def update(
     id: UUID,
     user: UserUpdate,
-    userService: UserService = Depends(),
+    user_service: UserService = Depends(),
 ):
-    response = await userService.update_async(user_id=id, user_body=user)
+    response = await user_service.update_async(user_id=id, user_body=user)
     return response
 
 # delete exist user
-@router.patch(
+@router.delete(
     "/{id}",
     response_model=UserResponse,
 )
 async def update(
     id: UUID,
-    userService: UserService = Depends(),
+    user_service: UserService = Depends(),
 ):
-    response = await userService.delete_async(user_id=id)
+    response = await user_service.delete_async(user_id=id)
     return response
