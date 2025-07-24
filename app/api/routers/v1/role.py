@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from typing import List
+from uuid import UUID
 
 from app.application.app_services.role_service import RoleService
 from app.application.dtos.role import *
