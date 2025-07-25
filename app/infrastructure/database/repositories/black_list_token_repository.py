@@ -13,7 +13,7 @@ class BlackListTokenRepository:
         self.db = db
 
     async def get_by_id_async(self, id: UUID) -> BlackListTokenDB | None:
-        query = select(BlackListTokenDB).filter_by(id=id)
+        query = select(BlackListTokenDB).where(BlackListTokenDB.id==str(id))
         queryResult = await self.db.execute(query)
         user = queryResult.scalars().first()
         return user

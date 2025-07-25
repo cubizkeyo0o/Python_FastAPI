@@ -28,7 +28,7 @@ class UserRoleRepository:
         return True
     
     async def delete_by_user_id_async(self, user_id: UUID) -> bool:
-        stmt = select(UserRole).where(user_id==user_id)
+        stmt = select(UserRole).where(user_id==str(user_id))
         exist_record = await self.db.execute(stmt)
 
         for user_role in exist_record:

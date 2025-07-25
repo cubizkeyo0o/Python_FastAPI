@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status, HTTPException, status, Path, Body, Query
 from typing import List
+from uuid import UUID
 
 from app.infrastructure.security.jwt import authentication_request_handle
 from app.application.app_services.message_service import MessageService
@@ -34,7 +35,7 @@ async def list_messages(
 
 @protected_router.get("/{message_id}", response_model=MessageResponse)
 async def get_message(
-    message_id: str = Path(...),
+    message_id: UUID = Path(...),
     message_service: MessageService = Depends()
 ):
     try:
@@ -50,7 +51,7 @@ async def get_message(
 
 @protected_router.put("/{message_id}", response_model=MessageResponse)
 async def update_message(
-    message_id: str = Path(...),
+    message_id: UUID = Path(...),
     message_data: MessageUpdate = Body(...),
     message_service: MessageService = Depends()
 ):
@@ -67,7 +68,7 @@ async def update_message(
 
 @protected_router.delete("/{message_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_message(
-    message_id: str = Path(...),
+    message_id: UUID = Path(...),
     message_service: MessageService = Depends()
 ):
     try:

@@ -5,12 +5,12 @@ from uuid import UUID, uuid4
 class RoleBase(BaseModel):
     name: str
     normalized_name: str
-    concurrency_stamp: str
+    concurrency_stamp: UUID
 
 class RoleCreate(BaseModel):
     name: str
     normalized_name: str
-    concurrency_stamp: str
+    concurrency_stamp: UUID
 
 class RoleCreateRequest(BaseModel):
     name: str
@@ -19,12 +19,12 @@ class RoleCreateRequest(BaseModel):
         return RoleCreate(
             name=self.name,
             normalized_name=self.name.upper(),
-            concurrency_stamp=str(uuid4())
+            concurrency_stamp=uuid4()
         )
 
 class RoleUpdate(BaseModel):
     name: Optional[str] = None
-    concurrency_stamp: str 
+    concurrency_stamp: UUID 
 
     def get_updated_fields(self):
         updates = {}

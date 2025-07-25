@@ -14,6 +14,7 @@ exception_status_map = {
 
     # Bad request
     BusinessRuleViolationException: 400,
+    DuplicatedException: 400,
 
     # Other
     NoRoleAssignedException: 403,

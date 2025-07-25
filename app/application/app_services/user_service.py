@@ -3,7 +3,7 @@ from typing import List
 from uuid import UUID
 
 from app.utils.exceptions.auth_exceptions import InvalidCredentialsException
-from app.utils.exceptions.common_exceptions import EntityNotFoundException, RequiredException, InternalServerErrorException
+from app.utils.exceptions.common_exceptions import EntityNotFoundException, RequiredException, InternalServerErrorException, DuplicatedException
 from app.infrastructure.database.repositories.user_repository import UserRepository, get_user_repository
 from app.infrastructure.database.repositories.role_repository import RoleRepository, get_role_repository
 from app.infrastructure.database.repositories.user_role_repository import UserRoleRepository, get_user_role_repository
@@ -62,9 +62,9 @@ class UserService:
 
     async def create_async(self, user_register: UserRegister) -> UserResponse:
         new_user = UserDb(full_name=user_register.full_name, user_name=user_register.user_name, email=user_register.email)
-        
-        # hash password
-        new_user.password_hash = hash_password(user_register.password)
+
+        # get account exist name
+        is_exist_user_name = await self.user_repo.get_by_username_async(user_register.user_name)
 
         # get exist roles
         user_role_ids = await self.check_and_get_valid_role(user_register.roles)
@@ -72,8 +72,14 @@ class UserService:
         if not user_register.roles:
             raise RequiredException("Roles is required")
 
+        if is_exist_user_name:
+            raise DuplicatedException("Username already exist")
+
         if not user_role_ids:
             raise EntityNotFoundException("Roles not found")
+
+        # hash password
+        new_user.password_hash = hash_password(user_register.password)
 
         # create user
         user_created = await self.user_repo.create_async(new_user)
@@ -136,10 +142,11 @@ class UserService:
     async def check_and_get_valid_role(self, name_roles: List[str]) -> List[UUID] | None:
         exist_roles = await self.role_repo.get_all_async()
         allowed_normalized_roles =  [role.normalized_name for role in exist_roles]
-        name_roles = [role.upper() for role in name_roles]
 
-        if all(role not in allowed_normalized_roles for role in name_roles):
-            return None
+        for role in name_roles:
+            role_upper = role.upper()
+            if role_upper not in allowed_normalized_roles:
+                raise EntityNotFoundException(f"Role '{role}' is not allowed.")
         
         return [
             role.id for role in exist_roles

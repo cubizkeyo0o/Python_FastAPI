@@ -30,7 +30,7 @@ class UserRepository:
         return user
         
     async def get_by_id_async(self, id: UUID):
-        query = select(UserDb).filter_by(id=id)
+        query = select(UserDb).filter_by(id=str(id))
         queryResult = await self.db.execute(query)
         user = queryResult.scalars().first()
         return user
@@ -52,7 +52,7 @@ class UserRepository:
         
         stmt = (
             update(UserDb)
-            .where(UserDb.id == user_id)
+            .where(UserDb.id == str(user_id))
             .values(**values)
             .execution_options(synchronize_session="fetch")
         )
@@ -65,9 +65,7 @@ class UserRepository:
         return user_db if user_db else None
     
     async def delete_async(self, id: UUID) -> None:
-        query = select(UserDb).filter_by(id=id)
-        queryResult = await self.db.execute(query)
-        existing_user = queryResult.scalars().first()
+        existing_user = self.get_by_id_async(id)
 
         if not existing_user:
             return None

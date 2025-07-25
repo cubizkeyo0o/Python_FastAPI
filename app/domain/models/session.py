@@ -5,7 +5,8 @@ from sqlalchemy import (
     String,
     DateTime,
     ForeignKey,
-    JSON
+    JSON,
+    CHAR
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -14,8 +15,8 @@ from app.infrastructure.database.database_init import Base
 class Session(Base):
     __tablename__ = "sessions"
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4 ,index=True)
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+    id: Mapped[UUID] = mapped_column(CHAR(36), primary_key=True, default=uuid4 ,index=True)
+    user_id: Mapped[UUID] = mapped_column(CHAR(36), ForeignKey("users.id"))
     title: Mapped[str] = mapped_column(String(255), index=True)
     summary_context: Mapped[str] = mapped_column(String(120), index=True)
     extra_metadata : Mapped[dict] = mapped_column(JSON, nullable=True)

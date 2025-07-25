@@ -55,7 +55,7 @@ async def update(
     "/{id}",
     response_model=UserResponse,
 )
-async def update(
+async def delete(
     id: UUID,
     user_service: UserService = Depends(),
 ):

@@ -3,7 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import update, delete
 from fastapi import Depends
-from uuid import UUID
+from uuid import UUID, uuid4
+from sqlalchemy.dialects import mysql
 
 from app.infrastructure.database.database_init import get_db_session
 from app.domain.models.session import Session
@@ -16,25 +17,38 @@ class SessionRepository:
         self.db = db
 
     async def create(self, new_session: Session) -> Session:
-        self.db.add(new_session)
+        new_session.id = uuid4()
+        query = self.db.add(new_session)
+        print(query.compile(dialect=mysql.dialect(), compile_kwargs={"literal_binds": True}))
         await self.db.commit()
         await self.db.refresh(new_session)
         return new_session
 
-    async def get_by_id(self, session_id: UUID) -> Optional[Session]:
-        query = select(Session).where(Session.id == session_id)
+    async def get_by_id_async(self, session_id: UUID) -> Optional[Session]:
+        query = select(Session).where(Session.id == str(session_id))
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
-    async def update(self, session_id: UUID, session_data: Session) -> Optional[Session]:
-        query = update(Session).where(Session.id == session_id).values(**session_data.dict()).execution_options(synchronize_session="fetch")
-        await self.db.execute(query)
-        await self.db.commit()
-
-        return await self.get_by_id(session_id)
+    async def update(self, session_id: UUID, values: dict) -> Optional[Session]:
+        if not values:
+            return await self.get_by_id_async(session_id)
+        
+        stmt = (
+            update(Session)
+            .where(Session.id == str(session_id))
+            .values(**values)
+            .execution_options(synchronize_session="fetch")
+        )
+        
+        await self.db.execute(stmt)
+        await self.db.flush()
+        
+        result = await self.db.execute(select(Session).where(Session.id == session_id))
+        role_updated = result.scalar_one_or_none()
+        return role_updated if role_updated else None
 
     async def delete(self, session_id: UUID) -> bool:
-        query = delete(Session).where(Session.id == session_id)
+        query = delete(Session).where(Session.id == str(session_id))
         result = await self.db.execute(query)
         await self.db.commit()
         return result.rowcount > 0

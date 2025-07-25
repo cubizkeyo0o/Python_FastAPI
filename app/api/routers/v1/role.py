@@ -54,7 +54,7 @@ async def update(
 @router.delete(
     "/{id}",
 )
-async def update(
+async def delete(
     id: UUID,
     role_service: RoleService = Depends(),
 ):

@@ -4,7 +4,8 @@ from sqlalchemy import (
     Column,
     String,
     DateTime,
-    ForeignKey
+    ForeignKey,
+    CHAR
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -13,8 +14,8 @@ from app.infrastructure.database.database_init import Base
 class Message(Base):
     __tablename__ = "messages"
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4 ,index=True)
-    session_id: Mapped[UUID] = mapped_column(ForeignKey("sessions.id"))
+    id: Mapped[UUID] = mapped_column(CHAR(36), primary_key=True, default=uuid4 ,index=True)
+    session_id: Mapped[UUID] = mapped_column(CHAR(36), ForeignKey("sessions.id"))
     role: Mapped[str] = mapped_column(String(255), index=True)
     content: Mapped[str] = mapped_column(String(120), index=True)
     created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)

@@ -3,7 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import update, String
 from typing import Optional, List
-from uuid import uuid4, UUID
+from uuid import uuid4, UUID, SafeUUID
+from sqlalchemy.dialects import mysql
 
 from app.infrastructure.database.database_init import get_db_session
 from app.domain.models.role import Role
@@ -16,7 +17,7 @@ class RoleRepository:
         self.db = db
         
     async def get_by_id_async(self, id: UUID):
-        query = select(Role).filter_by(id=id)
+        query = select(Role).where(Role.id == str(id))
         queryResult = await self.db.execute(query)
         role = queryResult.scalars().first()
         return role
@@ -27,6 +28,11 @@ class RoleRepository:
         roles = result.scalars().all()
         return roles
     
+    async def get_by_name_async(self, role_name: str) -> Optional[Role]:
+        query = select(Role).where(Role.normalized_name == role_name.strip().upper())
+        result = await self.db.execute(query)
+        return result.scalars().one_or_none()
+
     async def get_all_async(self) -> list[Role]:
         stmt = select(Role)
         result = await self.db.execute(stmt)
@@ -44,7 +50,7 @@ class RoleRepository:
         
         stmt = (
             update(Role)
-            .where(Role.id == role_id_update)
+            .where(Role.id == str(role_id_update))
             .values(**values)
             .execution_options(synchronize_session="fetch")
         )
@@ -57,9 +63,7 @@ class RoleRepository:
         return user_db if user_db else None
     
     async def delete_async(self, role_id_delete: UUID) -> bool:
-        query = select(Role).filter_by(id=role_id_delete)
-        queryResult = await self.db.execute(query)
-        existing_role = queryResult.scalars().first()
+        existing_role = await self.get_by_id_async(role_id_delete)
 
         if not existing_role:
             return False
@@ -71,7 +75,7 @@ class RoleRepository:
         query = (
             select(Role)
             .join(UserRole, UserRole.role_id == Role.id)
-            .where(UserRole.user_id == user_id)
+            .where(UserRole.user_id == str(user_id))
         )
         queryResult = await self.db.execute(query)
         roles = queryResult.scalars().all()

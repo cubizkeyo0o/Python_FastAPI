@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from uuid import UUID
 
 class MessageBase(BaseModel):
-    user_id: str
+    user_id: UUID
     name: str
 
 class MessageUpdate(BaseModel):
