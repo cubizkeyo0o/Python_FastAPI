@@ -14,12 +14,12 @@ class UserDb(Base):
     __tablename__ = "users"
 
     id: Mapped[UUID] = mapped_column(CHAR(36), primary_key=True, default=uuid4 ,index=True)
-    full_name: Mapped[str] = mapped_column(String(255), index=True)
+    full_name: Mapped[str] = mapped_column(String(255))
     user_name: Mapped[str] = mapped_column(String(120), index=True)
-    email: Mapped[str] = mapped_column(String(120), unique=True, index=True)
+    email: Mapped[str] = mapped_column(String(120), unique=True)
     password_hash: Mapped[str] = mapped_column(String(255))
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
 
     # user 1-N session
     sessions = relationship("Session", back_populates="user", cascade="all, delete-orphan")

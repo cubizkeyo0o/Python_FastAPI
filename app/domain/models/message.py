@@ -17,10 +17,10 @@ class Message(Base):
 
     id: Mapped[UUID] = mapped_column(CHAR(36), primary_key=True, default=uuid4 ,index=True)
     session_id: Mapped[UUID] = mapped_column(CHAR(36), ForeignKey("sessions.id"))
-    role: Mapped[str] = mapped_column(String(255), index=True)
+    role: Mapped[str] = mapped_column(String(255))
     content: Mapped[str] = mapped_column(Text, nullable=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
 
     # reverse relationship to session
     session = relationship("Session", back_populates="messages")
