@@ -31,3 +31,6 @@ SUB = "sub"
 EXP = "exp"
 IAT = "iat"
 JTI = "jti"
+
+CONTENT_PROMPT_SUMMARY_MESSAGES = "You are an AI assistant that helps users manage the context of long conversations. Your task is to read a sequence of messages between the user and the system, then generate a concise yet comprehensive summary (`summary_context`) that preserves the essential information needed for future interactions, without requiring a full review of the entire message history."
+CONTENT_PROMPT_TITLE_MESSAGES="You are an AI assistant tasked with generating a short and clear title for a chat session. Read the conversation and create a concise title (maximum 8 words) that captures the main topic or purpose of the discussion. Focus on making the first few words meaningful and informative, as they will be shown in the UI preview."

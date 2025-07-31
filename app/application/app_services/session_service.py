@@ -3,15 +3,20 @@ from typing import Optional
 from fastapi import Depends
 
 from app.infrastructure.database.repositories.session_repository import SessionRepository, get_session_repository
+from app.infrastructure.database.repositories.message_repository import MessageRepository, get_message_repository
 from app.domain.models.session import Session
 from app.application.dtos.session import *
 
 
 class SessionService:
     repo: SessionRepository
+    message_repo: MessageRepository
 
-    def __init__(self, repo: SessionRepository = Depends(get_session_repository)):
+    def __init__(self,
+                 repo: SessionRepository = Depends(get_session_repository),
+                 message_repo: MessageRepository = Depends(get_message_repository)):
         self.repo = repo
+        self.message_repo = message_repo
 
     async def create_session(self, session_data: SessionCreate) -> SessionResponse:
         # first time create sesion, set default "New Chat"
@@ -32,8 +37,5 @@ class SessionService:
     async def delete_session(self, session_id: UUID) -> bool:
         return await self.repo.delete(session_id)
     
-    async def generate_title_from_message(self, session_id: str, first_message: str) -> Optional[SessionResponse]:
-        words = first_message.split()
-        title = " ".join(words[:8]) + ("..." if len(words) > 8 else "")
-        update_data = SessionUpdate(title=title)
-        return await self.update_session(session_id, update_data)
+    async def count_messages_by_session(self, session_id: UUID) -> int:
+        return await self.message_repo.count_messages_by_session(session_id)

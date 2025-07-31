@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import update, delete
+from sqlalchemy import update, delete, func
 
 from app.infrastructure.database.database_session import get_db_session
 from app.domain.models.message import Message
@@ -30,6 +30,11 @@ class MessageRepository:
         query = select(Message).where(Message.id == str(message_id))
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
+
+    async def count_messages_by_session(self, session_id: str) -> int:
+        stmt = select(func.count(Message.id)).where(Message.session_id == str(session_id))
+        result = await self.db.execute(stmt)
+        return result.scalar_one()
 
     async def update(self, message_id: UUID, values: dict) -> Optional[Message]:
         if not values:
