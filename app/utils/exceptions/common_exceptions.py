@@ -26,3 +26,6 @@ class RequiredException(CommonException):
 
 class NoRoleAssignedException (CommonException):
     pass
+
+class DuplicatedException(CommonException):
+    pass

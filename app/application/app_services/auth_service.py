@@ -4,22 +4,27 @@ from uuid import uuid4, UUID
 
 from app.application.dtos.auth import TokenPair, PayloadToken
 from app.infrastructure.database.repositories.user_repository import UserRepository, get_user_repository
+from app.infrastructure.database.repositories.role_repository import RoleRepository, get_role_repository
 from app.infrastructure.database.repositories.black_list_token_repository import BlackListTokenRepository, get_black_list_token_repository
 from app.infrastructure.security.jwt import REFRESH_TOKEN_EXPIRES_MINUTES
 
 from app.infrastructure.security.jwt import create_token_pair, decode_access_token
 class AuthService:
-    user_repo = UserRepository
+    user_repo = UserRepository,
+    role_repo = RoleRepository,
     black_list_token_repo = BlackListTokenRepository
     
     def __init__(self,
                  user_repository: UserRepository = Depends(get_user_repository),
+                 role_repository: RoleRepository = Depends(get_role_repository),
                  black_list_token_repository: BlackListTokenRepository = Depends(get_black_list_token_repository)):
         self.user_repo = user_repository
+        self.role_repo = role_repository
         self.black_list_token_repo = black_list_token_repository
 
-    def generate_token_pair(self, user_id: UUID) -> TokenPair:
-        payload = PayloadToken(subject=str(user_id), jwt_id=str(uuid4()), issued_at=datetime.now(timezone.utc))
+    async def generate_token_pair(self, user_id: UUID) -> TokenPair:
+        user_roles = await self.role_repo.get_roles_by_user(user_id)
+        payload = PayloadToken(subject=str(user_id), jwt_id=str(uuid4()), issued_at=datetime.now(timezone.utc), roles=[role.normalized_name for role in user_roles])
         return create_token_pair(payload=payload)
 
     async def check_access_token(self, token_check: str) -> PayloadToken:

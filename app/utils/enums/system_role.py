@@ -6,6 +6,7 @@ class SystemRole(str, Enum):
     MANAGER = "Manager"
     GUEST = "Guest"
     ASSISTANT = "Assistant"
+    MODEL="Model"
 
     @property
     def normalized(self) -> str:

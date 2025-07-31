@@ -42,7 +42,7 @@ async def authentication_request_handle(request: Request,
     if not roles:
         raise NoRoleAssignedException(message="User does not have any assigned roles.")
     
-    request.state.user = user
+    request.state.user_id = user.id
     request.state.roles = roles
     
 def _create_access_token(payload: dict, expires_delta: timedelta = None):

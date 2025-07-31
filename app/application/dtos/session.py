@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from uuid import UUID
 
 class SessionBase(BaseModel):
-    user_id: str
+    user_id: UUID
     title: str
 
 class SessionUpdate(BaseModel):

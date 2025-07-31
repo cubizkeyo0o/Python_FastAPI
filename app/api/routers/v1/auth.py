@@ -26,7 +26,7 @@ async def login(
     if not login_succes_user:
         raise InternalServerErrorException()
 
-    token_pair = auth_service.generate_token_pair(login_succes_user.id)
+    token_pair = await auth_service.generate_token_pair(login_succes_user.id)
 
     auth_service.add_refresh_token_cookie(response, token_pair.refresh_token)
 

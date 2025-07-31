@@ -2,12 +2,11 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import update
-from typing import Optional
+from typing import Optional, List
 from uuid import uuid4, UUID
 
-from app.infrastructure.database.database_init import get_db_session
+from app.infrastructure.database.database_session import get_db_session
 from app.domain.models.user import UserDb
-from app.domain.models.role import Role
 
 class UserRepository:
     db: AsyncSession
@@ -31,7 +30,7 @@ class UserRepository:
         return user
         
     async def get_by_id_async(self, id: UUID):
-        query = select(UserDb).filter_by(id=id)
+        query = select(UserDb).filter_by(id=str(id))
         queryResult = await self.db.execute(query)
         user = queryResult.scalars().first()
         return user
@@ -53,7 +52,7 @@ class UserRepository:
         
         stmt = (
             update(UserDb)
-            .where(UserDb.id == user_id)
+            .where(UserDb.id == str(user_id))
             .values(**values)
             .execution_options(synchronize_session="fetch")
         )
@@ -66,21 +65,13 @@ class UserRepository:
         return user_db if user_db else None
     
     async def delete_async(self, id: UUID) -> None:
-        query = select(UserDb).filter_by(id=id)
-        queryResult = await self.db.execute(query)
-        existing_user = queryResult.scalars().first()
+        existing_user = self.get_by_id_async(id)
 
         if not existing_user:
             return None
         
         await self.db.delete(existing_user)
         return None
-    
-    async def get_role_by_user(self, user_id: UUID) -> Role:
-        query = select(Role).filter_by(user_id=user_id)
-        queryResult = await self.db.execute(query)
-        role = queryResult.scalars().first()
-        return role
 
 async def get_user_repository(db: AsyncSession = Depends(get_db_session)) -> UserRepository:
         return UserRepository(db)

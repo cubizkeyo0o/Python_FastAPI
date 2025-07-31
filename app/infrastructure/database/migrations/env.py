@@ -1,4 +1,3 @@
-from app.infrastructure.database.database_init import DATABASE_URL, Base
 import sys
 import asyncio
 from pathlib import Path
@@ -8,6 +7,7 @@ from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+from app.infrastructure.database.database_init import DATABASE_URL, Base
 
 # Remember add base entity to update
 from app.domain.models.user import UserDb

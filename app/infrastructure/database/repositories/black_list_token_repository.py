@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from uuid import UUID
 
-from app.infrastructure.database.database_init import get_db_session
+from app.infrastructure.database.database_session import get_db_session
 from app.domain.models.black_list_token import BlackListToken as BlackListTokenDB
 
 class BlackListTokenRepository:
@@ -13,7 +13,7 @@ class BlackListTokenRepository:
         self.db = db
 
     async def get_by_id_async(self, id: UUID) -> BlackListTokenDB | None:
-        query = select(BlackListTokenDB).filter_by(id=id)
+        query = select(BlackListTokenDB).where(BlackListTokenDB.id==str(id))
         queryResult = await self.db.execute(query)
         user = queryResult.scalars().first()
         return user

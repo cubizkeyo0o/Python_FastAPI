@@ -32,9 +32,9 @@ async def get_users(user_service: UserService = Depends()):
 )
 async def create(
     user: UserRegister,
-    userService: UserService = Depends(),
+    user_service: UserService = Depends(),
     ):
-    response = await userService.create_async(user_register=user)
+    response = await user_service.create_async(user_register=user)
     return response
 
 # Update exist user
@@ -45,12 +45,19 @@ async def create(
 async def update(
     id: UUID,
     user: UserUpdate,
-    userService: UserService = Depends(),
+    user_service: UserService = Depends(),
 ):
-    try:
-        response = await userService.update_async(user_id=id, user_body=user)
-        return response
-    except Exception as ex:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND) from ex
+    response = await user_service.update_async(user_id=id, user_body=user)
+    return response
 
-
+# delete exist user
+@router.delete(
+    "/{id}",
+    response_model=UserResponse,
+)
+async def delete(
+    id: UUID,
+    user_service: UserService = Depends(),
+):
+    response = await user_service.delete_async(user_id=id)
+    return response

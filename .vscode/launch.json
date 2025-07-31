@@ -12,6 +12,7 @@
             "args": [
               "app.main:app", 
               "--reload",
+              "--reload-dir", "app"
             ],
             "jinja": false,
           }

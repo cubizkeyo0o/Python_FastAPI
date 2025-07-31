@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from uuid import UUID
 
 class MessageBase(BaseModel):
-    user_id: str
+    user_id: UUID
     name: str
 
 class MessageUpdate(BaseModel):
@@ -12,9 +12,12 @@ class MessageUpdate(BaseModel):
 class MessageCreate(BaseModel):
     session_id: Optional[UUID] = None
     role: Optional[str] = None
-    message: Optional[str] = None
+    content: Optional[str] = None
 
 class MessageResponse(BaseModel):
     session_id: Optional[UUID] = None
     role: Optional[str] = None
-    message: Optional[str] = None
+    content: Optional[str] = None
+
+    class Config:
+        from_attributes = True

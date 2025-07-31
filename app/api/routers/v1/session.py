@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, status, HTTPException, status, Path, Body
+from fastapi import APIRouter, Depends, status, HTTPException, status, Path, Body, Request
+from uuid import UUID
 
 from app.infrastructure.security.jwt import authentication_request_handle
 from app.application.app_services.session_service import SessionService
@@ -9,14 +10,18 @@ protected_router = APIRouter(prefix="/v1/session", tags=["session"], dependencie
 
 @protected_router.post("/", response_model=SessionResponse, status_code=status.HTTP_201_CREATED)
 async def create_session(
+    request: Request,
     session_data: SessionCreate = Body(...),
     session_service: SessionService = Depends()
 ):
+    if not session_data.user_id:
+        session_data.user_id = request.state.user_id
+
     return await session_service.create_session(session_data)
 
 @protected_router.get("/{session_id}", response_model=SessionResponse)
 async def get_session(
-    session_id: str = Path(...),
+    session_id: UUID = Path(...),
     session_service: SessionService = Depends()
 ):
     try:
@@ -32,7 +37,7 @@ async def get_session(
 
 @protected_router.put("/{session_id}", response_model=SessionResponse)
 async def update_session(
-    session_id: str = Path(...),
+    session_id: UUID = Path(...),
     session_data: SessionUpdate = Body(...),
     session_service: SessionService = Depends()
 ):
@@ -49,7 +54,7 @@ async def update_session(
 
 @protected_router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_session(
-    session_id: str = Path(...),
+    session_id: UUID = Path(...),
     session_service: SessionService = Depends()
 ):
     try:
