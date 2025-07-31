@@ -20,7 +20,8 @@ from app.utils.exceptions.handlers import (
 )
 from app.utils.exceptions.common_exceptions import CommonException
 from app.utils.exceptions.auth_exceptions import AuthException
-from app.infrastructure.database.database_init import sessionmanager, Base
+from app.infrastructure.database.database_session import sessionmanager
+from app.infrastructure.database.database_init import Base
 
 load_dotenv()  # read file .env
 

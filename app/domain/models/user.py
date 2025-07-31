@@ -1,10 +1,10 @@
 from uuid import UUID, uuid4
-from datetime import datetime, timezone
 from sqlalchemy import (
     Column,
     String,
     DateTime,
-    CHAR
+    CHAR,
+    func
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -18,8 +18,8 @@ class UserDb(Base):
     user_name: Mapped[str] = mapped_column(String(120), index=True)
     email: Mapped[str] = mapped_column(String(120), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
-    created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     # user 1-N session
     sessions = relationship("Session", back_populates="user", cascade="all, delete-orphan")

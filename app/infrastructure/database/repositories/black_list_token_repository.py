@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from uuid import UUID
 
-from app.infrastructure.database.database_init import get_db_session
+from app.infrastructure.database.database_session import get_db_session
 from app.domain.models.black_list_token import BlackListToken as BlackListTokenDB
 
 class BlackListTokenRepository:

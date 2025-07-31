@@ -5,8 +5,6 @@ from typing import Any, Optional
 
 from app.config import REDIS_URL, USERNAME_REDIS_CLOUD, PASSWORD_REDIS_CLOUD
 
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
-
 class RedisClient:
     def __init__(self):
         self.client = redis.Redis(

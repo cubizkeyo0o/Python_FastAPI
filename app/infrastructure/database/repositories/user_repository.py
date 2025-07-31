@@ -5,7 +5,7 @@ from sqlalchemy import update
 from typing import Optional, List
 from uuid import uuid4, UUID
 
-from app.infrastructure.database.database_init import get_db_session
+from app.infrastructure.database.database_session import get_db_session
 from app.domain.models.user import UserDb
 
 class UserRepository:

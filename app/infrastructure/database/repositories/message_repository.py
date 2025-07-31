@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import update, delete
 
-from app.infrastructure.database.database_init import get_db_session
+from app.infrastructure.database.database_session import get_db_session
 from app.domain.models.message import Message
 
 class MessageRepository:
@@ -17,7 +17,7 @@ class MessageRepository:
     async def create(self, new_message: Message) -> Message:
         new_message.id = uuid4()
         self.db.add(new_message)
-        await self.db.commit()
+        await self.db.flush()
         await self.db.refresh(new_message)
         return new_message
 

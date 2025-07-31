@@ -6,7 +6,7 @@ from fastapi import Depends
 from uuid import UUID, uuid4
 from sqlalchemy.dialects import mysql
 
-from app.infrastructure.database.database_init import get_db_session
+from app.infrastructure.database.database_session import get_db_session
 from app.domain.models.session import Session
 
 
@@ -18,9 +18,8 @@ class SessionRepository:
 
     async def create(self, new_session: Session) -> Session:
         new_session.id = uuid4()
-        query = self.db.add(new_session)
-        print(query.compile(dialect=mysql.dialect(), compile_kwargs={"literal_binds": True}))
-        await self.db.commit()
+        self.db.add(new_session)
+        await self.db.flush()
         await self.db.refresh(new_session)
         return new_session
 

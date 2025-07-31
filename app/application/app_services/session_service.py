@@ -19,15 +19,15 @@ class SessionService:
             session_data.title = "New Chat"
 
         session = await self.repo.create(Session(**session_data.model_dump()))
-        return SessionResponse.model_dump(session)
+        return SessionResponse.model_validate(session)
 
     async def get_session(self, session_id: UUID) -> Optional[SessionResponse]:
         session = await self.repo.get_by_id_async(session_id)
-        return SessionResponse.model_dump(session) if session else None
+        return SessionResponse.model_validate(session) if session else None
 
     async def update_session(self, session_id: UUID, session_data: SessionUpdate) -> Optional[SessionResponse]:
         updated = await self.repo.update(session_id, session_data.model_dump())
-        return SessionResponse.model_dump(updated) if updated else None
+        return SessionResponse.model_validate(updated) if updated else None
 
     async def delete_session(self, session_id: UUID) -> bool:
         return await self.repo.delete(session_id)

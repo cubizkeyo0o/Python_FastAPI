@@ -12,9 +12,12 @@ class MessageUpdate(BaseModel):
 class MessageCreate(BaseModel):
     session_id: Optional[UUID] = None
     role: Optional[str] = None
-    message: Optional[str] = None
+    content: Optional[str] = None
 
 class MessageResponse(BaseModel):
     session_id: Optional[UUID] = None
     role: Optional[str] = None
-    message: Optional[str] = None
+    content: Optional[str] = None
+
+    class Config:
+        from_attributes = True
